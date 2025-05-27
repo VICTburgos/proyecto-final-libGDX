@@ -13,3 +13,5 @@ Nombre del Proyecto: TrucoARG
 • Cómo Compilar y Ejecutar: Descargalo y usalo en algun compilador
 
 • Estado Actual del Proyecto: Configuración inicial
+
+[Ver la Propuesta Completa del Proyectoaquí] (https://github.com/TU_USUARIO/TU_REPOSITORIO/wiki/Propuesta-delProyecto----Nombre-del-Juego)
