@@ -2,7 +2,7 @@
 
 Nombre del Proyecto: TrucoARG
 
-• Integrantes del Grupo: BURGOS Victoria
+• Integrante del Grupo: BURGOS Victoria
 
 • Descripción Corta del Juego: juego popular argentino... EL TRUCO... pero online y solitario
 
