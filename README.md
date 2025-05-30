@@ -8,6 +8,8 @@ juego popular argentino... EL TRUCO... pero online y solitario
 
 ## Tecnologías Utilizadas: 
 LibGDX 
+Java
+IntelliJ IDEA
 
 ## Las plataformas objetivo: 
 Escritorio
@@ -18,4 +20,5 @@ Descargalo y usalo en algun compilador
 ## Estado Actual del Proyecto:
 Configuración inicial
 
-[Ver la Propuesta Completa del Proyectoaquí] (https://github.com/VICTburgos/proyecto-final-libGDX/wiki/TrucoARG))
+[Ver la Propuesta Completa del Proyecto aquí]().
+
