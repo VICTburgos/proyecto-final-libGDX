@@ -18,15 +18,15 @@ TrucoARG es una versión digital del clásico juego de cartas argentino "El Truc
 
 ### Abra una terminal y ejecute el siguiente comando para clonar el proyecto:
 
--git clone (https://github.com/VICTburgos/proyecto-final-libGDX)
--luego ejecute: cd proyecto-final-libGDX
+- git clone (https://github.com/VICTburgos/proyecto-final-libGDX)
+- luego ejecute: cd proyecto-final-libGDX
 
 ### importe el proyecto en IntelliJ IDEA
 
 Abrí IntelliJ IDEA.
--Seleccione "Open" y elija la carpeta donde clonó el proyecto.
--IntelliJ detectará el archivo build.gradle y comenzará a importar automáticamente como proyecto Gradle.
--Espere a que finalice la sincronización de dependencias.
+- Seleccione "Open" y elija la carpeta donde clonó el proyecto.
+- IntelliJ detectará el archivo build.gradle y comenzará a importar automáticamente como proyecto Gradle.
+- Espere a que finalice la sincronización de dependencias.
 
 ### Ejecutar el proyecto
 En el panel izquierdo, navegá a src/main/java.
