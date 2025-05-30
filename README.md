@@ -4,7 +4,7 @@
 BURGOS Victoria
 
 ## Descripción Corta del Juego:
-TrucoARG es una versión digital del clásico juego de cartas argentino "El Truco", pensada para jugarse en modo solitario. La idea es capturar la esencia del juego tradicional con una interfaz simple y amigable para el usuario.
+TrucoARG es una versión digital del clásico juego de cartas argentino "El Truco", pensada para jugarse en modo online. La idea es capturar la esencia del juego tradicional con una interfaz simple y amigable para el usuario.
 
 ## Tecnologías Utilizadas:
 - LibGDX
