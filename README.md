@@ -18,7 +18,7 @@ TrucoARG es una versión digital del clásico juego de cartas argentino "El Truc
 
 ### Abra una terminal y ejecute el siguiente comando para clonar el proyecto:
 
-- git clone (https://github.com/VICTburgos/proyecto-final-libGDX)
+- git clone https://github.com/VICTburgos/proyecto-final-libGDX
 - luego ejecute: cd proyecto-final-libGDX
 
 ### importe el proyecto en IntelliJ IDEA
