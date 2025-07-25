@@ -1,9 +1,9 @@
-package truco.principal.gwt;
+package trucoarg.gwt;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import truco.principal.Principal;
+import trucoarg.principal.Principal;
 
 /** Launches the GWT application. */
 public class GwtLauncher extends GwtApplication {

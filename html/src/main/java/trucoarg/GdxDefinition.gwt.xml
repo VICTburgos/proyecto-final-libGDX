@@ -14,10 +14,10 @@
   <inherits name="com.badlogic.ashley_gwt" />
   <inherits name="com.badlogic.gdx.ai" />
   <inherits name="com.badlogic.gdx.physics.box2d.box2d-gwt" />
-  <inherits name="truco.principal.Principal" />
+  <inherits name="trucoarg.principal.Principal" />
 
   <!-- You must change this if you rename packages later, or rename GwtLauncher. -->
-  <entry-point class="truco.principal.gwt.GwtLauncher" />
+  <entry-point class="trucoarg.gwt.GwtLauncher" />
 
   <!-- Reflection includes may be needed for your code or library code. Each value is separated by periods ('.'). -->
   <!-- You can include a full package by not including the name of a type at the end. -->

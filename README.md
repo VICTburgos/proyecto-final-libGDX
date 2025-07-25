@@ -31,9 +31,9 @@ Abrí IntelliJ IDEA.
 ### Ejecutar el proyecto
 En el panel izquierdo, navegá a src/main/java.
 
-Buscá la clase Lwjgl3Launcher.java (suele estar en el paquete com.trucoarg.desktop).
+Buscá la clase lwjgl3.trucoarg.Lwjgl3Launcher.java (suele estar en el paquete com.trucoarg.desktop).
 
-Haz click derecho sobre esa clase y selecciona "Run" 'Lwjgl3Launcher.main()' para ejecutar el juego.
+Haz click derecho sobre esa clase y selecciona "Run" 'lwjgl3.trucoarg.Lwjgl3Launcher.main()' para ejecutar el juego.
 
 
 ## Estado Actual del Proyecto:
