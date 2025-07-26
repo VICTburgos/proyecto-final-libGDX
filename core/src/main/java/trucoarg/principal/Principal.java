@@ -3,7 +3,6 @@ package trucoarg.principal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import trucoarg.pantallas.PantallaMenu;
-import trucoarg.pantallas.PantallaUnJugador;
 import trucoarg.utiles.Render;
 
 public class Principal extends Game {
