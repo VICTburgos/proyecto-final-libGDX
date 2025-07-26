@@ -26,17 +26,9 @@ public class PantallaMenu implements Screen {
         fondo = new Imagen(Recursos.FONDOMENU);
         fondo.dimensionarImg(Configuracion.ANCHO, Configuracion.ALTO);
         b = Render.batch;
+        cargarOpcionesCentradas();
         entradas = new EntradasUsuario();
         Gdx.input.setInputProcessor(entradas);
-
-        int ejeY = 500;
-        int movimiento = 50;
-
-        for (int i = 0; i < opciones.length; i++) {
-            opciones[i] = new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);
-            opciones[i].setTexto(textos[i]);
-            opciones[i].setPosicion(300, ejeY - i * movimiento);
-        }
     }
 
     @Override
@@ -84,11 +76,25 @@ public class PantallaMenu implements Screen {
             }
         }
     }
+    private void cargarOpcionesCentradas() {
+        int avance = 60;
+        int yInicial = 500;
+
+        for (int i = 0; i < opciones.length; i++) {
+            opciones[i] = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+            opciones[i].setTexto(textos[i]);
+
+
+            float xCentrado = (Configuracion.ANCHO - opciones[i].getAncho()) / 2;
+
+            opciones[i].setPosicion(xCentrado, yInicial - (i * avance));
+        }
+    }
 
     private void ejecutarOpcion() {
         switch (opc) {
             case 1:
-            Render.app.setScreen(new ModoUnJugador());
+            Render.app.setScreen(new PantallaUnJugador());
                 break;
             case 2:
                 //Dos jugadores
