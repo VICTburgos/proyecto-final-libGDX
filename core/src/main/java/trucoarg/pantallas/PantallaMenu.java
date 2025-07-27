@@ -15,8 +15,8 @@ public class PantallaMenu implements Screen {
 
     private Imagen fondo;
     private SpriteBatch b;
-    private Texto[] opciones = new Texto[5];
-    private String[] textos = {"Un jugador", "Dos jugadores", "Opciones", "Tutorial", "Salir..."};
+    private final Texto[] OPCIONES = new Texto[5];
+    private final String[] TEXTOS = {"Un jugador", "Dos jugadores", "Opciones", "Tutorial", "Salir..."};
     private EntradasUsuario entradas;
     private int opc = 1;
     private float tiempo = 0;
@@ -33,6 +33,7 @@ public class PantallaMenu implements Screen {
 
     @Override
     public void render(float delta) {
+        Render.limpiarPantalla(1,1,1);
         tiempo += delta;
 
         manejarEntradas();
@@ -40,7 +41,7 @@ public class PantallaMenu implements Screen {
 
         b.begin();
         fondo.dibujar();
-        for (Texto t : opciones) {
+        for (Texto t : OPCIONES) {
             t.dibujar();
         }
         b.end();
@@ -50,13 +51,13 @@ public class PantallaMenu implements Screen {
         if (tiempo > 0.15f) {
             if (entradas.abajo()) {
                 opc++;
-                if (opc > opciones.length) opc = 1;
+                if (opc > OPCIONES.length) opc = 1;
                 tiempo = 0;
             }
 
             if (entradas.arriba()) {
                 opc--;
-                if (opc < 1) opc = opciones.length;
+                if (opc < 1) opc = OPCIONES.length;
                 tiempo = 0;
             }
 
@@ -68,11 +69,11 @@ public class PantallaMenu implements Screen {
     }
 
     private void actualizarColores() {
-        for (int i = 0; i < opciones.length; i++) {
+        for (int i = 0; i < OPCIONES.length; i++) {
             if (i == opc - 1) {
-                opciones[i].setColor(Color.BLUE);
+                OPCIONES[i].setColor(Color.BLUE);
             } else {
-                opciones[i].setColor(Color.WHITE);
+                OPCIONES[i].setColor(Color.WHITE);
             }
         }
     }
@@ -80,20 +81,25 @@ public class PantallaMenu implements Screen {
         int avance = 60;
         int yInicial = 500;
 
-        for (int i = 0; i < opciones.length; i++) {
-            opciones[i] = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
-            opciones[i].setTexto(textos[i]);
+        for (int i = 0; i < OPCIONES.length; i++) {
+            OPCIONES[i] = new Texto(Recursos.FUENTE_MENU, 60, Color.WHITE, true);
+            OPCIONES[i].setTexto(TEXTOS[i]);
 
 
-            float xCentrado = (Configuracion.ANCHO - opciones[i].getAncho()) / 2;
+            float xCentrado = (Configuracion.ANCHO - OPCIONES[i].getAncho()) / 2;
 
-            opciones[i].setPosicion(xCentrado, yInicial - (i * avance));
+            OPCIONES[i].setPosicion(xCentrado, yInicial - (i * avance));
         }
     }
 
     private void ejecutarOpcion() {
         switch (opc) {
             case 1:
+                if (Recursos.MUSICA_GENERAL != null) {
+                    Recursos.MUSICA_GENERAL.stop();
+                    Recursos.MUSICA_GENERAL.setPosition(0);
+                    Recursos.MUSICA_JUEGO.play();
+                }
             Render.app.setScreen(new PantallaUnJugador());
                 break;
             case 2:

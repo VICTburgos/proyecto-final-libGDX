@@ -9,9 +9,6 @@ public class Render {
     public static SpriteBatch batch;
     public static Principal app;
 
-    public static void inicializar() {
-        batch = new SpriteBatch();
-    }
 
     public static void limpiarPantalla(float r, float g, float b){
         Gdx.gl.glClearColor(r, g, b, 1);

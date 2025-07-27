@@ -33,8 +33,9 @@ public class PantallaTutorial implements Screen {
 
     @Override
     public void render(float delta) {
+        Render.limpiarPantalla(1,1,1);
 
-        if (manejarEntradas()) return;
+        if (salir()) return;
 
         b.begin();
         fondo.dibujar();
@@ -45,7 +46,7 @@ public class PantallaTutorial implements Screen {
     }
 
 
-    private boolean manejarEntradas() {
+    private boolean salir() {
         if (entradas.escape()) {
             Render.app.setScreen(new PantallaMenu());
             return true;
