@@ -1,9 +1,9 @@
-package trucoarg.io;
+package trucoarg.ui;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-public class EntradasUsuario implements InputProcessor {
+public class EntradasMenu implements InputProcessor {
 
     private boolean abajo = false, arriba = false, enter = false, escape=false;
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import trucoarg.elementos.Imagen;
 import trucoarg.elementos.Texto;
-import trucoarg.io.EntradasUsuario;
+import trucoarg.ui.EntradasMenu;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.Recursos;
 import trucoarg.utiles.Render;
@@ -17,7 +17,7 @@ public class PantallaMenu implements Screen {
     private SpriteBatch b;
     private final Texto[] OPCIONES = new Texto[5];
     private final String[] TEXTOS = {"Un jugador", "Dos jugadores", "Opciones", "Tutorial", "Salir..."};
-    private EntradasUsuario entradas;
+    private EntradasMenu entradas;
     private int opc = 1;
     private float tiempo = 0;
 
@@ -27,7 +27,7 @@ public class PantallaMenu implements Screen {
         fondo.dimensionarImg(Configuracion.ANCHO, Configuracion.ALTO);
         b = Render.batch;
         cargarOpcionesCentradas();
-        entradas = new EntradasUsuario();
+        entradas = new EntradasMenu();
         Gdx.input.setInputProcessor(entradas);
     }
 

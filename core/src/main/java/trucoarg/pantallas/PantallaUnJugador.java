@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import trucoarg.elementos.Imagen;
 import trucoarg.elementos.Texto;
-import trucoarg.io.EntradasUsuario;
+import trucoarg.personajesModoSolitario.Carta;
+import trucoarg.personajesModoSolitario.MazoSolitario;
+import trucoarg.ui.EntradasJugadorSolitario;
+import trucoarg.ui.EntradasMenu;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.Recursos;
 import trucoarg.utiles.Render;
@@ -15,9 +18,12 @@ public class PantallaUnJugador implements Screen {
 
     private Imagen fondo;
     private SpriteBatch b;
-    EntradasUsuario entradas;
+    EntradasJugadorSolitario entradasJuegoSoli;
 
     Texto informacionSalida;
+
+    private  MazoSolitario mazoSolitario;
+    private Carta cartaActual;
 
     @Override
     public void show() {
@@ -25,32 +31,46 @@ public class PantallaUnJugador implements Screen {
         fondo.dimensionarImg(Configuracion.ANCHO, Configuracion.ALTO);
         b = Render.batch;
 
-        entradas= new EntradasUsuario();
-        Gdx.input.setInputProcessor(entradas);
+        entradasJuegoSoli= new EntradasJugadorSolitario();
+        Gdx.input.setInputProcessor(entradasJuegoSoli);
 
         informacionSalida= new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);
+
+        mazoSolitario= new MazoSolitario();
+        cartaActual= mazoSolitario.sacarCartita();
 
     }
 
     @Override
     public void render(float delta) {
         Render.limpiarPantalla(1,1,1);
-        if (manejarEntradas())return;
         b.begin();
         fondo.dibujar();
         informacionSalida.setTexto("ESC para ir al menu principal...");
         informacionSalida.setPosicion(50,650);
         informacionSalida.dibujar();
+
+            if (cartaActual != null) {
+                cartaActual.setPosition(390, 60);
+                cartaActual.setSize(200, 300);
+                cartaActual.dibujar(b);
+            }
         b.end();
+        if (manejarEntradas())return;
+
     }
 
     private boolean manejarEntradas() {
-        if (entradas.escape()) {
+        if (entradasJuegoSoli.escape()) {
             Recursos.MUSICA_JUEGO.stop();
             Recursos.MUSICA_JUEGO.setPosition(0);
             Recursos.MUSICA_GENERAL.play();
             Render.app.setScreen(new PantallaMenu());
             return true;
+        }
+
+        if(entradasJuegoSoli.basto()){
+            cartaActual= mazoSolitario.sacarCartita();
         }
         return false;
     }
@@ -81,5 +101,6 @@ public class PantallaUnJugador implements Screen {
     public void dispose() {
         Recursos.liberar();
         fondo.dispose();
+        b.dispose();
     }
 }
