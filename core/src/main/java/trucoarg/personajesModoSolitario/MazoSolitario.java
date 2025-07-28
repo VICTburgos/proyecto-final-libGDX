@@ -2,15 +2,19 @@ package trucoarg.personajesModoSolitario;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import trucoarg.utiles.RecursoCartas;
+import trucoarg.utiles.CartasFinales;
 
 public class MazoSolitario {
 
-    private final List<RecursoCartas> disponibles;
+    private final List<CartasFinales> disponibles;
 
     public MazoSolitario(){
         disponibles = new ArrayList<>();
-        Collections.addAll(disponibles, RecursoCartas.values());
+        inicializar();
+    }
+
+    private void inicializar(){
+        Collections.addAll(disponibles, CartasFinales.values());
         Collections.shuffle(disponibles);
     }
 
@@ -23,5 +27,10 @@ public class MazoSolitario {
 
     public boolean estaVacio(){
         return disponibles.isEmpty();
+    }
+
+    public void reiniciarMazo(){
+        disponibles.clear();
+        inicializar();
     }
 }

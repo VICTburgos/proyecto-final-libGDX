@@ -2,7 +2,7 @@ package trucoarg.utiles;
 
 import trucoarg.personajesModoSolitario.Carta;
 
-public enum RecursoCartas {
+public enum CartasFinales {
     // BASTO
     C1B(1, PalosCartas.BASTO, Recursos.ANCHO_BASTO),
     C2B(2, PalosCartas.BASTO, Recursos.DOS_BASTO),
@@ -55,7 +55,7 @@ public enum RecursoCartas {
     private final PalosCartas PALOS_CARTAS;
     private final String RUTA;
 
-    RecursoCartas(int numero, PalosCartas PALOS_CARTAS, String RUTA) {
+    CartasFinales(int numero, PalosCartas PALOS_CARTAS, String RUTA) {
         this.numero = numero;
         this.PALOS_CARTAS = PALOS_CARTAS;
         this.RUTA = RUTA;
