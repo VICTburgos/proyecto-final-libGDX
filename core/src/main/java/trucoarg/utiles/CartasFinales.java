@@ -62,7 +62,7 @@ public enum CartasFinales {
     }
 
     public Carta crearCarta(){
-        return new Carta(numero, PALOS_CARTAS, RUTA);
+        return new Carta(numero, PALOS_CARTAS, RUTA,390, 60);
     }
 }
 
