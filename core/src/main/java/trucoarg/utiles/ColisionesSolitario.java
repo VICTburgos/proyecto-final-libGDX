@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import trucoarg.elementos.Imagen;
+import trucoarg.personajesSolitario.Carta;
+import trucoarg.personajesSolitario.MazoSolitario;
 
 import java.awt.*;
 
@@ -16,6 +18,9 @@ public class ColisionesSolitario extends ApplicationAdapter {
     private Rectangle zonaBastoRect, zonaCopaRect, zonaOroRect, zonaEspadaRect;
 
     private Imagen zonaBasto, zonaCopa, zonaOro, zonaEspada;
+
+    Carta cartaActual;
+    MazoSolitario mazoSolitario;
 
     @Override
     public void create(){
@@ -42,9 +47,34 @@ public class ColisionesSolitario extends ApplicationAdapter {
         b.end();
         shapeRendere.begin(ShapeRenderer.ShapeType.Line);
         shapeRendere.setColor(0, 1, 0, 1);
-        shapeRendere.rect();
+        shapeRendere.rect(zonaBastoRect.x, zonaBastoRect.y, zonaBastoRect.width, zonaBastoRect.height);
 
         shapeRendere.end();
+    }
+
+    public void colision(){
+        if(cartaActual.getPALOS_CARTAS()==PalosCartas.BASTO && cartaActual.getQcyo().overlaps(zonaBastoRect)){
+            mazoSolitario.sacarCartita();
+        }
+        else{
+            mazoSolitario.reiniciarMazo();
+        }
+
+        if(cartaActual.getPALOS_CARTAS()==PalosCartas.COPA && cartaActual.getQcyo().overlaps(zonaCopaRect)){
+            mazoSolitario.sacarCartita();
+        }
+        else{
+            mazoSolitario.reiniciarMazo();
+        }
+        if(cartaActual.getPALOS_CARTAS()==PalosCartas.ORO && cartaActual.getQcyo().overlaps(zonaOroRect)){
+            mazoSolitario.sacarCartita();
+        }
+        else{
+            mazoSolitario.reiniciarMazo();
+        }
+
+
+
     }
 
     @Override

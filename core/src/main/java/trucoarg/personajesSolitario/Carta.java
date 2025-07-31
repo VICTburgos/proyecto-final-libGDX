@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.Configuracion;
@@ -16,12 +17,16 @@ public class Carta extends Sprite {
     private Vector2 posicion;
     private float velocidad = 300f;
 
+    private Rectangle qcyo;
+
     public Carta(int NUMERO, PalosCartas PALOS_CARTAS, String rutaImagen, float y, float x) {
         super(new Texture(rutaImagen));
         this.NUMERO = NUMERO;
         this.PALOS_CARTAS = PALOS_CARTAS;
         posicion = new Vector2(x, y);
         setPosition(posicion.x, posicion.y);
+
+        qcyo= new Rectangle(posicion.x, posicion.y, getWidth(), getHeight());
     }
 
     public PalosCartas getPALOS_CARTAS() {
@@ -63,8 +68,13 @@ public class Carta extends Sprite {
 
 
             setPosition(posicion.x, posicion.y);
+            qcyo.setPosition(posicion);
 
         }
+    }
+
+    public Rectangle getQcyo(){
+        return qcyo;
     }
 
 
