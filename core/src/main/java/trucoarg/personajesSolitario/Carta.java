@@ -1,4 +1,4 @@
-package trucoarg.personajesModoSolitario;
+package trucoarg.personajesSolitario;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import trucoarg.ui.EntradasJugadorSolitario;
+import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.PalosCartas;
 
@@ -36,7 +36,7 @@ public class Carta extends Sprite {
         super.draw(b);
     }
 
-    public void mover(EntradasJugadorSolitario entradas) {
+    public void mover(EntradasSolitario entradas) {
         float delta = Gdx.graphics.getDeltaTime();
         boolean seMovio = false;
 
@@ -67,34 +67,24 @@ public class Carta extends Sprite {
         }
     }
 
-    // ¡MÉTODOS FALTANTES! - Estos son los que necesitas agregar:
 
-    /**
-     * Establece una nueva posición para la carta
-     */
     public void setPosicion(Vector2 nuevaPosicion) {
         posicion.set(nuevaPosicion);
         setPosition(posicion.x, posicion.y);
         System.out.println("setPosicion() llamado - Carta posicionada en: " + posicion);
     }
 
-    /**
-     * Obtiene la posición actual de la carta
-     */
+
     public Vector2 getPosicion() {
-        return new Vector2(posicion); // Devuelve una copia para evitar modificaciones externas
+        return new Vector2(posicion);
     }
 
-    /**
-     * Cambia la velocidad de movimiento
-     */
+
     public void setVelocidad(float nuevaVelocidad) {
         this.velocidad = nuevaVelocidad;
     }
 
-    /**
-     * Obtiene la velocidad actual
-     */
+
     public float getVelocidad() {
         return velocidad;
     }

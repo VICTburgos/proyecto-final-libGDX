@@ -1,6 +1,6 @@
 package trucoarg.utiles;
 
-import trucoarg.personajesModoSolitario.Carta;
+import trucoarg.personajesSolitario.Carta;
 
 public enum CartasFinales {
     // BASTO

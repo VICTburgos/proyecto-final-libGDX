@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import trucoarg.elementos.Imagen;
 import trucoarg.elementos.Texto;
-import trucoarg.personajesModoSolitario.Carta;
-import trucoarg.personajesModoSolitario.MazoSolitario;
-import trucoarg.ui.EntradasJugadorSolitario;
+import trucoarg.personajesSolitario.Carta;
+import trucoarg.personajesSolitario.MazoSolitario;
+import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.PalosCartas;
 import trucoarg.utiles.Recursos;
@@ -21,7 +21,7 @@ public class PantallaUnJugador implements Screen {
 
     private Imagen fondo;
     private SpriteBatch b;
-    EntradasJugadorSolitario entradasJuegoSoli;
+    EntradasSolitario entradasJuegoSoli;
 
     Texto informacionSalida;
     Texto ganador;
@@ -39,7 +39,7 @@ public class PantallaUnJugador implements Screen {
         fondo.dimensionarImg(Configuracion.ANCHO, Configuracion.ALTO);
         b = Render.batch;
 
-        entradasJuegoSoli = new EntradasJugadorSolitario();
+        entradasJuegoSoli = new EntradasSolitario();
         input.setInputProcessor(entradasJuegoSoli);
 
         informacionSalida = new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);

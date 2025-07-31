@@ -3,7 +3,7 @@ package trucoarg.ui;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-public class EntradasJugadorSolitario implements InputProcessor {
+public class EntradasSolitario implements InputProcessor {
     private boolean basto = false, copa = false, oro = false, espada = false, escape = false;
     private boolean arriba = false, abajo = false, derecha = false, izquierda = false;
 

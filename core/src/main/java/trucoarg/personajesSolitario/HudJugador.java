@@ -1,4 +1,4 @@
-package trucoarg.personajesModoSolitario;
+package trucoarg.personajesSolitario;
 
 public class HudJugador {
     private int aciertos;
