@@ -40,7 +40,9 @@ public class ColisionesSolitario extends ApplicationAdapter {
         b.begin();
         dibujarZonas();
         b.end();
-        shapeRendere.begin();
+        shapeRendere.begin(ShapeRenderer.ShapeType.Line);
+        shapeRendere.setColor(0, 1, 0, 1);
+        shapeRendere.rect();
 
         shapeRendere.end();
     }
