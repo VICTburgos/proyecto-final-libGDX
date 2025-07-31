@@ -76,5 +76,9 @@ public class Recursos {
 
 
 
-
+    //ZONA COLISIONES
+    public static final String ZONA_BASTO= "zonas/zonaBasto.png";
+    public static final String ZONA_COPA= "zonas/zonaOro.png";
+    public static final String ZONA_ESPADA= "zonas/zonaEspada.png";
+    public static final String ZONA_ORO= "zonas/zonaOro.png";
 }
