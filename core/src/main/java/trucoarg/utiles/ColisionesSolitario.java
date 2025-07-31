@@ -17,8 +17,8 @@ public class ColisionesSolitario {
 
     private Imagen zonaBasto, zonaCopa, zonaOro, zonaEspada;
 
-    float anchoZona = 100;
-    float altoZona = 150;
+    float anchoZonaImg = 150;
+    float altoZonaImg = 250;
 
 
     public ColisionesSolitario() {
@@ -32,7 +32,7 @@ public class ColisionesSolitario {
 
         float margenSuperior = 100;
         float anchoZona = 150;
-        float altoZona = 200;
+        float altoZona = 250;
         float separacion = 100;
 
         float totalAncho = 4 * anchoZona + 3 * separacion;
@@ -86,19 +86,19 @@ public class ColisionesSolitario {
 
 
     public void dibujarZonas() {
-        zonaBasto.dimensionarImg(anchoZona, altoZona);
+        zonaBasto.dimensionarImg(anchoZonaImg, altoZonaImg);
         zonaBasto.setPosicion(zonaBastoRect.x, zonaBastoRect.y);
         zonaBasto.dibujar();
 
-        zonaCopa.dimensionarImg(anchoZona, altoZona);
+        zonaCopa.dimensionarImg(anchoZonaImg, altoZonaImg);
         zonaCopa.setPosicion(zonaCopaRect.x, zonaCopaRect.y);
         zonaCopa.dibujar();
 
-        zonaOro.dimensionarImg(anchoZona, altoZona);
+        zonaOro.dimensionarImg(anchoZonaImg, altoZonaImg);
         zonaOro.setPosicion(zonaOroRect.x, zonaOroRect.y);
         zonaOro.dibujar();
 
-        zonaEspada.dimensionarImg(anchoZona, altoZona);
+        zonaEspada.dimensionarImg(anchoZonaImg, altoZonaImg);
         zonaEspada.setPosicion(zonaEspadaRect.x, zonaEspadaRect.y);
         zonaEspada.dibujar();
     }
