@@ -81,7 +81,6 @@ public class Carta extends Sprite {
     public void setPosicion(Vector2 nuevaPosicion) {
         posicion.set(nuevaPosicion);
         setPosition(posicion.x, posicion.y);
-        System.out.println("setPosicion() llamado - Carta posicionada en: " + posicion);
     }
 
 

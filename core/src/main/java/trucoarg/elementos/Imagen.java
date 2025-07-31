@@ -17,7 +17,9 @@ public class Imagen {
 
     public void dimensionarImg(float ancho, float alto){s.setSize(ancho, alto);}
 
-    public void setTransparecia(float a){s.setAlpha(a);}
+    public void setPosicion(float x, float y){
+        s.setPosition(x, y);
+    }
 
     public void dispose() {
         if (t != null) {

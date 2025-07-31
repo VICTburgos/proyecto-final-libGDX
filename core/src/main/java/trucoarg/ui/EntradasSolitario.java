@@ -4,7 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
 public class EntradasSolitario implements InputProcessor {
-    private boolean basto = false, copa = false, oro = false, espada = false, escape = false;
+    private boolean basto = false, copa = false, oro = false, espada = false, escape = false, enter=false;
     private boolean arriba = false, abajo = false, derecha = false, izquierda = false;
 
     public boolean escape() {
@@ -34,6 +34,11 @@ public class EntradasSolitario implements InputProcessor {
     public boolean espada() {
         boolean fuePresionado = espada;
         espada = false;
+        return fuePresionado;
+    }
+    public boolean enter() {
+        boolean fuePresionado = enter;
+        enter = false;
         return fuePresionado;
     }
 
@@ -70,6 +75,9 @@ public class EntradasSolitario implements InputProcessor {
         if (keycode == Input.Keys.ESCAPE) {
             escape = true;
         }
+        if (keycode == Input.Keys.ENTER) {
+            enter = true;
+        }
 
 
         if (keycode == Input.Keys.W|| keycode == Input.Keys.UP) {
@@ -104,6 +112,9 @@ public class EntradasSolitario implements InputProcessor {
         }
         if (keycode == Input.Keys.ESCAPE) {
             escape = false;
+        }
+        if (keycode == Input.Keys.ENTER) {
+            enter = false;
         }
 
         if (keycode == Input.Keys.W || keycode == Input.Keys.UP) {

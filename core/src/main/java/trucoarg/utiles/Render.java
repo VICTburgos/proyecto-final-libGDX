@@ -8,7 +8,6 @@ import trucoarg.principal.Principal;
 
 public class Render {
     public static SpriteBatch batch;
-    public static ShapeRenderer shapeRenderer;
     public static Principal app;
 
 
@@ -16,4 +15,6 @@ public class Render {
         Gdx.gl.glClearColor(r, g, b, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
+
+
 }

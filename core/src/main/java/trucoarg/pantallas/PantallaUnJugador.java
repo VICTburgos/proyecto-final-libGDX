@@ -10,10 +10,7 @@ import trucoarg.elementos.Texto;
 import trucoarg.personajesSolitario.Carta;
 import trucoarg.personajesSolitario.MazoSolitario;
 import trucoarg.ui.EntradasSolitario;
-import trucoarg.utiles.Configuracion;
-import trucoarg.utiles.PalosCartas;
-import trucoarg.utiles.Recursos;
-import trucoarg.utiles.Render;
+import trucoarg.utiles.*;
 
 import static com.badlogic.gdx.Gdx.input;
 
@@ -28,6 +25,7 @@ public class PantallaUnJugador implements Screen {
 
     private MazoSolitario mazoSolitario;
     private Carta cartaActual;
+    private ColisionesSolitario colisionesSolitario;
 
     private int contAciertos = 0;
 
@@ -47,6 +45,7 @@ public class PantallaUnJugador implements Screen {
 
         mazoSolitario = new MazoSolitario();
         cartaActual = mazoSolitario.sacarCartita();
+        colisionesSolitario= new ColisionesSolitario();
 
 
         float centroX = (Configuracion.ANCHO - 200) / 2f;
@@ -72,6 +71,7 @@ public class PantallaUnJugador implements Screen {
         if (cartaActual != null) {
             cartaActual.setSize(200, 300);
             cartaActual.dibujar(b);
+            colisionesSolitario.dibujarZonas();
 
         }
 
@@ -80,6 +80,7 @@ public class PantallaUnJugador implements Screen {
         }
 
         b.end();
+        colisionesSolitario.render();
 
         if (manejarEntradas()) return;
     }
@@ -140,6 +141,21 @@ public class PantallaUnJugador implements Screen {
         if (cartaActual != null) {
             cartaActual.mover(entradasJuegoSoli);
         }
+        if (entradasJuegoSoli.enter()) {
+            boolean acierto = colisionesSolitario.colision(cartaActual, mazoSolitario);
+            if (acierto) {
+                contAciertos++;
+                cartaActual = mazoSolitario.sacarCartita();
+            }
+            else{
+                reiniciarJuego();
+            }
+            if (cartaActual != null) {
+                cartaActual.setPosicion(POSICION_INICIAL);
+            }
+        }
+
+
 
         return false;
     }

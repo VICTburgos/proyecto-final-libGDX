@@ -1,84 +1,109 @@
 package trucoarg.utiles;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import trucoarg.elementos.Imagen;
 import trucoarg.personajesSolitario.Carta;
 import trucoarg.personajesSolitario.MazoSolitario;
+import com.badlogic.gdx.math.Rectangle;
 
-import java.awt.*;
-
-public class ColisionesSolitario extends ApplicationAdapter {
+public class ColisionesSolitario {
 
     private SpriteBatch b;
-    private ShapeRenderer shapeRendere;
+    public static ShapeRenderer shapeRendere;
 
     private Rectangle zonaBastoRect, zonaCopaRect, zonaOroRect, zonaEspadaRect;
 
     private Imagen zonaBasto, zonaCopa, zonaOro, zonaEspada;
 
-    Carta cartaActual;
-    MazoSolitario mazoSolitario;
+    float anchoZona = 100;
+    float altoZona = 150;
 
-    @Override
-    public void create(){
-        b= Render.batch;
-        shapeRendere= Render.shapeRenderer;
 
-        zonaBasto= new Imagen(Recursos.ZONA_BASTO);
-        zonaCopa= new Imagen(Recursos.ZONA_COPA);
-        zonaOro= new Imagen(Recursos.ZONA_ORO);
-        zonaEspada= new Imagen(Recursos.ZONA_ESPADA);
+    public ColisionesSolitario() {
+        b = Render.batch;
+        shapeRendere = new ShapeRenderer();
 
-        zonaBastoRect = new Rectangle(100, Gdx.graphics.getHeight()-150,100,120);
-        zonaCopaRect = new Rectangle(100, Gdx.graphics.getHeight()-150,100,120);
-        zonaOroRect = new Rectangle(100, Gdx.graphics.getHeight()-150,100,120);
-        zonaEspadaRect = new Rectangle(100, Gdx.graphics.getHeight()-150,100,120);
+        zonaBasto = new Imagen(Recursos.ZONA_BASTO);
+        zonaCopa = new Imagen(Recursos.ZONA_COPA);
+        zonaOro = new Imagen(Recursos.ZONA_ORO);
+        zonaEspada = new Imagen(Recursos.ZONA_ESPADA);
+
+        float margenSuperior = 100;
+        float anchoZona = 150;
+        float altoZona = 200;
+        float separacion = 100;
+
+        float totalAncho = 4 * anchoZona + 3 * separacion;
+        float inicioX = (Configuracion.ANCHO - totalAncho) / 2;
+        float y = Configuracion.ALTO - altoZona - margenSuperior;
+
+        zonaBastoRect = new Rectangle(inicioX, y, anchoZona, altoZona);
+        zonaCopaRect = new Rectangle(inicioX + (anchoZona + separacion), y, anchoZona, altoZona);
+        zonaOroRect = new Rectangle(inicioX + 2 * (anchoZona + separacion), y, anchoZona, altoZona);
+        zonaEspadaRect = new Rectangle(inicioX + 3 * (anchoZona + separacion), y, anchoZona, altoZona);
 
     }
 
-    @Override
-    public void render(){
-        Render.limpiarPantalla(1,1,1);
+    public void render() {
         b.begin();
         dibujarZonas();
+
         b.end();
         shapeRendere.begin(ShapeRenderer.ShapeType.Line);
         shapeRendere.setColor(0, 1, 0, 1);
         shapeRendere.rect(zonaBastoRect.x, zonaBastoRect.y, zonaBastoRect.width, zonaBastoRect.height);
-
+        shapeRendere.setColor(0, 1, 1, 1);
+        shapeRendere.rect(zonaCopaRect.x, zonaCopaRect.y, zonaCopaRect.width, zonaCopaRect.height);
+        shapeRendere.setColor(0, 0, 1, 1);
+        shapeRendere.rect(zonaOroRect.x, zonaOroRect.y, zonaOroRect.width, zonaOroRect.height);
+        shapeRendere.setColor(1, 1, 0, 1);
+        shapeRendere.rect(zonaEspadaRect.x, zonaEspadaRect.y, zonaEspadaRect.width, zonaEspadaRect.height);
         shapeRendere.end();
     }
 
-    public void colision(){
-        if(cartaActual.getPALOS_CARTAS()==PalosCartas.BASTO && cartaActual.getQcyo().overlaps(zonaBastoRect)){
-            mazoSolitario.sacarCartita();
+    public boolean colision(Carta cartaActual, MazoSolitario mazoSolitario) {
+        boolean colisionValida = false;
+
+        if (cartaActual.getPALOS_CARTAS() == PalosCartas.BASTO && cartaActual.getQcyo().overlaps(zonaBastoRect)) {
+            colisionValida = true;
+        } else if (cartaActual.getPALOS_CARTAS() == PalosCartas.COPA && cartaActual.getQcyo().overlaps(zonaCopaRect)) {
+            colisionValida = true;
+        } else if (cartaActual.getPALOS_CARTAS() == PalosCartas.ORO && cartaActual.getQcyo().overlaps(zonaOroRect)) {
+            colisionValida = true;
+        } else if (cartaActual.getPALOS_CARTAS() == PalosCartas.ESPADA && cartaActual.getQcyo().overlaps(zonaEspadaRect)) {
+            colisionValida = true;
         }
-        else{
+
+
+        if (!colisionValida) {
             mazoSolitario.reiniciarMazo();
         }
 
-        if(cartaActual.getPALOS_CARTAS()==PalosCartas.COPA && cartaActual.getQcyo().overlaps(zonaCopaRect)){
-            mazoSolitario.sacarCartita();
-        }
-        else{
-            mazoSolitario.reiniciarMazo();
-        }
-        if(cartaActual.getPALOS_CARTAS()==PalosCartas.ORO && cartaActual.getQcyo().overlaps(zonaOroRect)){
-            mazoSolitario.sacarCartita();
-        }
-        else{
-            mazoSolitario.reiniciarMazo();
-        }
-
-
-
+        return colisionValida;
     }
 
-    @Override
-    public void  dispose(){
+
+    public void dibujarZonas() {
+        zonaBasto.dimensionarImg(anchoZona, altoZona);
+        zonaBasto.setPosicion(zonaBastoRect.x, zonaBastoRect.y);
+        zonaBasto.dibujar();
+
+        zonaCopa.dimensionarImg(anchoZona, altoZona);
+        zonaCopa.setPosicion(zonaCopaRect.x, zonaCopaRect.y);
+        zonaCopa.dibujar();
+
+        zonaOro.dimensionarImg(anchoZona, altoZona);
+        zonaOro.setPosicion(zonaOroRect.x, zonaOroRect.y);
+        zonaOro.dibujar();
+
+        zonaEspada.dimensionarImg(anchoZona, altoZona);
+        zonaEspada.setPosicion(zonaEspadaRect.x, zonaEspadaRect.y);
+        zonaEspada.dibujar();
+    }
+
+    public void dispose() {
         b.dispose();
         shapeRendere.dispose();
         zonaEspada.dispose();
@@ -86,13 +111,5 @@ public class ColisionesSolitario extends ApplicationAdapter {
         zonaCopa.dispose();
         zonaBasto.dispose();
     }
-
-    public void dibujarZonas(){
-        zonaBasto.dibujar();
-        zonaCopa.dibujar();
-        zonaOro.dibujar();
-        zonaEspada.dibujar();
-    }
-
 
 }
