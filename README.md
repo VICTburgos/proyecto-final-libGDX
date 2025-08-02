@@ -50,9 +50,9 @@ El objetivo principal de esta etapa es demostrar las **mecánicas centrales del 
 
 - ✅ Interfaz gráfica con fondo, cartas e imágenes personalizadas.
 - ✅ Mecánica básica de juego: selección, movimiento y jugada de cartas.
-- ✅ Implementación de múltiples pantallas: Menú principal y Juego.
+- ✅ Implementación de múltiples pantallas: Menú principal y Juego. etc.
 - ✅ HUD funcional: muestra texto e información al jugador.
-- ✅ Sonido ambiente y efectos: música de fondo y efectos en las jugadas.
+- ✅ Sonido ambiente: música de fondo.
 - ✅ Uso de cámara y viewport para resolución adaptable.
 - ✅ Código organizado en paquetes y clases reutilizables.
 
