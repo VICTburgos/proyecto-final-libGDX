@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import trucoarg.elementos.Imagen;
 import trucoarg.elementos.Texto;
 import trucoarg.personajesSolitario.Carta;
+import trucoarg.personajesSolitario.HudJugador;
 import trucoarg.personajesSolitario.MazoSolitario;
 import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.*;
@@ -19,6 +20,7 @@ public class PantallaUnJugador implements Screen {
     private Imagen fondo;
     private SpriteBatch b;
     EntradasSolitario entradasJuegoSoli;
+    HudJugador estadisticas;
 
     Texto informacionSalida;
     Texto ganador;
@@ -28,8 +30,11 @@ public class PantallaUnJugador implements Screen {
     private ColisionesSolitario colisionesSolitario;
 
     private int contAciertos = 0;
+    private int contRepeticiones=0;
 
     private static final Vector2 POSICION_INICIAL = new Vector2();
+    float centroX = (Configuracion.ANCHO - 200) / 2f;
+    float centroY = (Configuracion.ALTO - 500) / 2f;
 
     @Override
     public void show() {
@@ -38,6 +43,7 @@ public class PantallaUnJugador implements Screen {
         b = Render.batch;
 
         entradasJuegoSoli = new EntradasSolitario();
+        estadisticas= new HudJugador(contAciertos, contRepeticiones);
         input.setInputProcessor(entradasJuegoSoli);
 
         informacionSalida = new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);
@@ -48,8 +54,7 @@ public class PantallaUnJugador implements Screen {
         colisionesSolitario= new ColisionesSolitario();
 
 
-        float centroX = (Configuracion.ANCHO - 200) / 2f;
-        float centroY = (Configuracion.ALTO - 500) / 2f;
+
         POSICION_INICIAL.set(centroX, centroY);
 
         if (cartaActual != null) {
@@ -68,12 +73,17 @@ public class PantallaUnJugador implements Screen {
         informacionSalida.setPosicion(50, 650);
         informacionSalida.dibujar();
 
+        if(estadisticas!= null){
+            estadisticas.render();
+        }
+
         if (cartaActual != null) {
             cartaActual.setSize(200, 300);
             cartaActual.dibujar(b);
             colisionesSolitario.dibujarZonas();
 
         }
+
 
         if (contAciertos == 40) {
             ganar();
@@ -97,7 +107,6 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.basto()) {
             if (cartaActual.getPALOS_CARTAS() == PalosCartas.BASTO) {
                 System.out.println("Muuy bieeen, segui asi");
-                contAciertos++;
                 sacarNuevaCarta();
             } else {
                 System.out.println("A curtirse, vas devuelta");
@@ -108,7 +117,6 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.copa()) {
             if (cartaActual.getPALOS_CARTAS() == PalosCartas.COPA) {
                 System.out.println("Esas copas las quiero yo!");
-                contAciertos++;
                 sacarNuevaCarta();
             } else {
                 System.out.println("Pero mira lo que venir a errar");
@@ -119,7 +127,6 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.oro()) {
             if (cartaActual.getPALOS_CARTAS() == PalosCartas.ORO) {
                 System.out.println("oro...");
-                contAciertos++;
                 sacarNuevaCarta();
             } else {
                 System.out.println("Bueno mas para mi...");
@@ -130,7 +137,6 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.espada()) {
             if (cartaActual.getPALOS_CARTAS() == PalosCartas.ESPADA) {
                 System.out.println("Ay me pinché!");
-                contAciertos++;
                 sacarNuevaCarta();
             } else {
                 System.out.println("...");
@@ -144,14 +150,10 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.enter()) {
             boolean acierto = colisionesSolitario.colision(cartaActual, mazoSolitario);
             if (acierto) {
-                contAciertos++;
-                cartaActual = mazoSolitario.sacarCartita();
+                  sacarNuevaCarta();
             }
             else{
                 reiniciarJuego();
-            }
-            if (cartaActual != null) {
-                cartaActual.setPosicion(POSICION_INICIAL);
             }
         }
 
@@ -161,6 +163,9 @@ public class PantallaUnJugador implements Screen {
     }
 
         private void sacarNuevaCarta() {
+        contAciertos++;
+        estadisticas.setAciertos(contAciertos);
+            System.out.println("tus aciertos son: "+ estadisticas.getAciertos());
         cartaActual = mazoSolitario.sacarCartita();
         if (cartaActual != null) {
             cartaActual.setPosicion(POSICION_INICIAL);
@@ -169,12 +174,16 @@ public class PantallaUnJugador implements Screen {
 
     private void ganar() {
         ganador.setTexto("GANASTE, MUY BIEN COMPAÑERO");
-        ganador.setPosicion(200, 120);
+        ganador.setPosicion(400, centroY);
         ganador.dibujar();
     }
 
     private void reiniciarJuego() {
         contAciertos = 0;
+        contRepeticiones++;
+        estadisticas.setRepeticiones(contRepeticiones);
+        estadisticas.setAciertos(contAciertos);
+        System.out.println("Tus repes son"+ estadisticas.getRepeticiones());
         mazoSolitario.reiniciarMazo();
         cartaActual = mazoSolitario.sacarCartita();
 
