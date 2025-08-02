@@ -37,7 +37,32 @@ Haz click derecho sobre esa clase y selecciona "Run" 'lwjgl3.trucoarg.Lwjgl3Laun
 
 
 ## Estado Actual del Proyecto:
-Configuración inicial
+Este es un prototipo jugable del clásico juego de cartas **Truco Argentino**, desarrollado en Java con el framework **LibGDX**. Esta versión implementa un **modo solitario**, donde el jugador puede mover y jugar cartas en el modo solitario especificado en la wiki.
 
 [Ver la Propuesta Completa del Proyecto aquí](https://github.com/VICTburgos/proyecto-final-libGDX/wiki/TrucoARG)
+
+
+El objetivo principal de esta etapa es demostrar las **mecánicas centrales del juego**, incluyendo interacción, movimiento, HUD, sonido, y gestión de pantallas.
+
+---
+
+### 🎮 Características implementadas
+
+- ✅ Interfaz gráfica con fondo, cartas e imágenes personalizadas.
+- ✅ Mecánica básica de juego: selección, movimiento y jugada de cartas.
+- ✅ Implementación de múltiples pantallas: Menú principal y Juego.
+- ✅ HUD funcional: muestra texto e información al jugador.
+- ✅ Sonido ambiente y efectos: música de fondo y efectos en las jugadas.
+- ✅ Uso de cámara y viewport para resolución adaptable.
+- ✅ Código organizado en paquetes y clases reutilizables.
+
+---
+
+
+### ▶️ Video de demostración
+
+**[🔗 Link al video (por subir)]**
+
+---
+
 
