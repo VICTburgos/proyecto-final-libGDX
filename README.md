@@ -61,7 +61,7 @@ El objetivo principal de esta etapa es demostrar las **mecánicas centrales del 
 
 ### ▶️ Video de demostración
 
-**[🔗 Link al video (por subir)]**
+**[(🔗 Link al video](https://www.youtube.com/watch?v=LxBIDAFYyRI)]**
 
 ---
 
