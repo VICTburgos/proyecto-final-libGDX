@@ -11,7 +11,7 @@ import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.PalosCartas;
 
-public class Carta extends Sprite {
+public class CartaSolitario extends Sprite {
     private final int NUMERO;
     private final PalosCartas PALOS_CARTAS;
     private Vector2 posicion;
@@ -19,7 +19,7 @@ public class Carta extends Sprite {
 
     private Rectangle qcyo;
 
-    public Carta(int NUMERO, PalosCartas PALOS_CARTAS, String rutaImagen, float y, float x) {
+    public CartaSolitario(int NUMERO, PalosCartas PALOS_CARTAS, String rutaImagen, float y, float x) {
         super(new Texture(rutaImagen));
         this.NUMERO = NUMERO;
         this.PALOS_CARTAS = PALOS_CARTAS;

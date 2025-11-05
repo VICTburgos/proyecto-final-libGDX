@@ -1,6 +1,6 @@
 package trucoarg.utiles;
 
-import trucoarg.personajesSolitario.Carta;
+import trucoarg.personajesSolitario.CartaSolitario;
 
 public enum CartasFinales {
     // BASTO
@@ -61,8 +61,8 @@ public enum CartasFinales {
         this.RUTA = RUTA;
     }
 
-    public Carta crearCarta(){
-        return new Carta(numero, PALOS_CARTAS, RUTA,390, 60);
+    public CartaSolitario crearCarta(){
+        return new CartaSolitario(numero, PALOS_CARTAS, RUTA,390, 60);
     }
 }
 

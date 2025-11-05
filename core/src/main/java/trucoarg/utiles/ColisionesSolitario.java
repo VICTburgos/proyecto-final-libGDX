@@ -1,10 +1,9 @@
 package trucoarg.utiles;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import trucoarg.elementos.Imagen;
-import trucoarg.personajesSolitario.Carta;
+import trucoarg.personajesSolitario.CartaSolitario;
 import trucoarg.personajesSolitario.MazoSolitario;
 import com.badlogic.gdx.math.Rectangle;
 
@@ -63,7 +62,7 @@ public class ColisionesSolitario {
         shapeRendere.end();
     }
 
-    public boolean colision(Carta cartaActual, MazoSolitario mazoSolitario) {
+    public boolean colision(CartaSolitario cartaActual, MazoSolitario mazoSolitario) {
         boolean colisionValida = false;
 
         if (cartaActual.getPALOS_CARTAS() == PalosCartas.BASTO && cartaActual.getQcyo().overlaps(zonaBastoRect)) {

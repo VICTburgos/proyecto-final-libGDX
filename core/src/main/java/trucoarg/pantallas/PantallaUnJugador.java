@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import trucoarg.elementos.Imagen;
 import trucoarg.elementos.Texto;
-import trucoarg.personajesSolitario.Carta;
-import trucoarg.personajesSolitario.HudJugador;
+import trucoarg.personajesSolitario.CartaSolitario;
+import trucoarg.personajesSolitario.HudJugadorSolitario;
 import trucoarg.personajesSolitario.MazoSolitario;
 import trucoarg.ui.EntradasSolitario;
 import trucoarg.utiles.*;
@@ -20,13 +20,13 @@ public class PantallaUnJugador implements Screen {
     private Imagen fondo;
     private SpriteBatch b;
     EntradasSolitario entradasJuegoSoli;
-    HudJugador estadisticas;
+    HudJugadorSolitario estadisticas;
 
     Texto informacionSalida;
     Texto ganador;
 
     private MazoSolitario mazoSolitario;
-    private Carta cartaActual;
+    private CartaSolitario cartaActual;
     private ColisionesSolitario colisionesSolitario;
 
     private int contAciertos = 0;
@@ -43,7 +43,7 @@ public class PantallaUnJugador implements Screen {
         b = Render.batch;
 
         entradasJuegoSoli = new EntradasSolitario();
-        estadisticas= new HudJugador(contAciertos, contRepeticiones);
+        estadisticas= new HudJugadorSolitario(contAciertos, contRepeticiones);
         input.setInputProcessor(entradasJuegoSoli);
 
         informacionSalida = new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);
@@ -174,7 +174,7 @@ public class PantallaUnJugador implements Screen {
 
     private void ganar() {
         ganador.setTexto("GANASTE, MUY BIEN COMPAÑERO");
-        ganador.setPosicion(400, centroY);
+        ganador.setPosicion(centroX-200, centroY+100);
         ganador.dibujar();
     }
 

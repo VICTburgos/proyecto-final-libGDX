@@ -18,7 +18,7 @@ public class MazoSolitario {
         Collections.shuffle(disponibles);
     }
 
-    public Carta sacarCartita(){
+    public CartaSolitario sacarCartita(){
         if(disponibles.isEmpty()){
             return null;
         }

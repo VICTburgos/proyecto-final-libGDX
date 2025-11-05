@@ -1,12 +1,11 @@
 package trucoarg.personajesSolitario;
 
-import box2dLight.BlendFunc;
 import com.badlogic.gdx.graphics.Color;
 import trucoarg.elementos.Texto;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.Recursos;
 
-public class HudJugador {
+public class HudJugadorSolitario {
 
     float centroY = (Configuracion.ALTO - 500) / 2f;
     private int aciertos;
@@ -14,7 +13,7 @@ public class HudJugador {
     private final Texto textoAciertos;
     private final Texto textoRepeticiones;
 
-    public HudJugador(int aciertos, int repeticiones) {
+    public HudJugadorSolitario(int aciertos, int repeticiones) {
         this.aciertos = aciertos;
         this.repeticiones = repeticiones;
 
