@@ -157,8 +157,6 @@ public class PantallaUnJugador implements Screen {
             }
         }
 
-
-
         return false;
     }
 

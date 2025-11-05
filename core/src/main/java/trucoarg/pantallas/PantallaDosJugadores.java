@@ -4,8 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import trucoarg.elementos.Imagen;
+import trucoarg.personajesDosJugadores.JuegoTruco;
 import trucoarg.personajesDosJugadores.JugadorBase;
-import trucoarg.personajesSolitario.MazoSolitario;
 import trucoarg.personajesSolitario.CartaSolitario;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.Recursos;
@@ -17,8 +17,10 @@ public class PantallaDosJugadores implements Screen {
 
     private Imagen fondo;
     private SpriteBatch batch;
+
+    private JuegoTruco juego;
     private JugadorBase jugador1;
-    private MazoSolitario mazo;
+    private JugadorBase jugador2;
 
     @Override
     public void show() {
@@ -27,18 +29,29 @@ public class PantallaDosJugadores implements Screen {
 
         batch = Render.batch;
 
+        juego = new JuegoTruco();
+        jugador1 = juego.getJugador1();
+        jugador2 = juego.getJugador2();
 
-        mazo = new MazoSolitario();
-        jugador1 = new JugadorBase("Jugador 1", mazo);
-
-
-        posicionarCartasJugador(jugador1.getMano());
+        posicionarCartasJugadorAbajo(jugador1.getMano());
+        posicionarCartasJugadorArriba(jugador2.getMano());
     }
 
-    private void posicionarCartasJugador(List<CartaSolitario> mano) {
+    private void posicionarCartasJugadorAbajo(List<CartaSolitario> mano) {
         float xInicial = Configuracion.ANCHO / 2f - 300;
         float y = 50;
+        float separacion = 220;
 
+        for (int i = 0; i < mano.size(); i++) {
+            CartaSolitario carta = mano.get(i);
+            carta.setSize(200, 300);
+            carta.setPosicion(new com.badlogic.gdx.math.Vector2(xInicial + i * separacion, y));
+        }
+    }
+
+    private void posicionarCartasJugadorArriba(List<CartaSolitario> mano) {
+        float xInicial = Configuracion.ANCHO / 2f - 300;
+        float y = Configuracion.ALTO - 350;
         float separacion = 220;
 
         for (int i = 0; i < mano.size(); i++) {
@@ -51,11 +64,16 @@ public class PantallaDosJugadores implements Screen {
     @Override
     public void render(float delta) {
         Render.limpiarPantalla(0, 0, 0);
+
         batch.begin();
 
         fondo.dibujar();
 
         for (CartaSolitario carta : jugador1.getMano()) {
+            carta.dibujar(batch);
+        }
+
+        for (CartaSolitario carta : jugador2.getMano()) {
             carta.dibujar(batch);
         }
 
