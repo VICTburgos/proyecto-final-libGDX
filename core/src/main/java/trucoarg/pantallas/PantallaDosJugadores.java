@@ -24,7 +24,7 @@ public class PantallaDosJugadores implements Screen {
 
     @Override
     public void show() {
-        fondo = new Imagen(Recursos.FONDOUNJUGADOR);
+        fondo = new Imagen(Recursos.FONDODOSJUGADORES);
         fondo.dimensionarImg(Configuracion.ANCHO, Configuracion.ALTO);
 
         batch = Render.batch;
