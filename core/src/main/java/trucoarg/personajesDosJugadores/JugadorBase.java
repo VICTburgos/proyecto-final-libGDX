@@ -11,7 +11,7 @@ public class JugadorBase extends Sprite {
     private CartaSolitario carta;
     private String nombre;
     private List<CartaSolitario> mano;
-    private boolean esMano; // <<--- acá se define si es mano o pie
+    private boolean esMano;
 
     public JugadorBase(String nombre, MazoSolitario mazo, boolean esMano) {
         this.nombre = nombre;

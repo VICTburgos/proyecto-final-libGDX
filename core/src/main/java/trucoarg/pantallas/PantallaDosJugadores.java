@@ -44,7 +44,7 @@ public class PantallaDosJugadores implements Screen {
 
         for (int i = 0; i < mano.size(); i++) {
             CartaSolitario carta = mano.get(i);
-            carta.setSize(200, 300);
+            carta.setSize(100, 200);
             carta.setPosicion(new com.badlogic.gdx.math.Vector2(xInicial + i * separacion, y));
         }
     }
@@ -56,7 +56,7 @@ public class PantallaDosJugadores implements Screen {
 
         for (int i = 0; i < mano.size(); i++) {
             CartaSolitario carta = mano.get(i);
-            carta.setSize(200, 300);
+            carta.setSize(100, 200);
             carta.setPosicion(new com.badlogic.gdx.math.Vector2(xInicial + i * separacion, y));
         }
     }
