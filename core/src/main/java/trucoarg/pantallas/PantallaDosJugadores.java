@@ -7,6 +7,7 @@ import trucoarg.elementos.Imagen;
 import trucoarg.personajesDosJugadores.JuegoTruco;
 import trucoarg.personajesDosJugadores.JugadorBase;
 import trucoarg.personajesSolitario.CartaSolitario;
+import trucoarg.ui.EntradaDosJugadores;
 import trucoarg.utiles.Configuracion;
 import trucoarg.utiles.Recursos;
 import trucoarg.utiles.Render;
@@ -35,6 +36,9 @@ public class PantallaDosJugadores implements Screen {
 
         posicionarCartasJugadorAbajo(jugador1.getMano());
         posicionarCartasJugadorArriba(jugador2.getMano());
+        Gdx.input.setInputProcessor(new EntradaDosJugadores(jugador1.getMano(), jugador2.getMano()));
+
+
     }
 
     private void posicionarCartasJugadorAbajo(List<CartaSolitario> mano) {

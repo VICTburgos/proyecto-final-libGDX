@@ -81,13 +81,26 @@ public class CartaSolitario extends Sprite {
     public void setPosicion(Vector2 nuevaPosicion) {
         posicion.set(nuevaPosicion);
         setPosition(posicion.x, posicion.y);
+        qcyo.setPosition(posicion);
+        qcyo.setSize(getWidth(), getHeight());
+    }
+
+    public boolean fueClickeada(float x, float y) {
+        return qcyo.contains(x, y);
+    }
+
+@Override
+    public void setSize(float width, float height) {
+        super.setSize(width, height);
+        if (qcyo != null) {
+            qcyo.setSize(width, height);
+        }
     }
 
 
     public Vector2 getPosicion() {
         return new Vector2(posicion);
     }
-
 
     public void setVelocidad(float nuevaVelocidad) {
         this.velocidad = nuevaVelocidad;
