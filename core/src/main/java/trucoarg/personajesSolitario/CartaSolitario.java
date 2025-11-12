@@ -13,15 +13,17 @@ import trucoarg.utiles.PalosCartas;
 
 public class CartaSolitario extends Sprite {
     private final int NUMERO;
+    private final int NIVEL;
     private final PalosCartas PALOS_CARTAS;
     private Vector2 posicion;
     private float velocidad = 300f;
 
     private Rectangle qcyo;
 
-    public CartaSolitario(int NUMERO, PalosCartas PALOS_CARTAS, String rutaImagen, float y, float x) {
+    public CartaSolitario(int NUMERO, PalosCartas PALOS_CARTAS, String rutaImagen, float y, float x, int NIVEL) {
         super(new Texture(rutaImagen));
         this.NUMERO = NUMERO;
+        this.NIVEL= NIVEL;
         this.PALOS_CARTAS = PALOS_CARTAS;
         posicion = new Vector2(x, y);
         setPosition(posicion.x, posicion.y);
@@ -96,6 +98,17 @@ public class CartaSolitario extends Sprite {
             qcyo.setSize(width, height);
         }
     }
+
+    public void moverAlCentro(float deltaTime) {
+        float objetivoX = Configuracion.ANCHO / 2f - getWidth() / 2f;
+        float objetivoY = Configuracion.ALTO / 2f - getHeight() / 2f;
+
+        posicion.set(objetivoX, objetivoY);
+        setPosition(posicion.x, posicion.y);
+        qcyo.setPosition(posicion);
+    }
+
+
 
 
     public Vector2 getPosicion() {

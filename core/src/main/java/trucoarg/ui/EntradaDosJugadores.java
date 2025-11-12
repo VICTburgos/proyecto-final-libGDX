@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.Vector2;
 import trucoarg.personajesSolitario.CartaSolitario;
+import trucoarg.utiles.Configuracion;
+
 import java.util.List;
 
 public class EntradaDosJugadores implements InputProcessor {
@@ -20,13 +22,16 @@ public class EntradaDosJugadores implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        float y = Gdx.graphics.getHeight() - screenY; // CORRECCIÓN del eje Y
+        float y = Gdx.graphics.getHeight() - screenY;
         float x = screenX;
+
+        float centroX = (Configuracion.ANCHO / 2f) - 50;
+        float centroY = (Configuracion.ALTO / 2f) - 100;
 
         for (CartaSolitario carta : cartasJugador1) {
             if (carta.fueClickeada(x, y)) {
                 System.out.println("Click en carta del Jugador 1: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
-                carta.setPosicion(new Vector2(carta.getPosicion().x, carta.getPosicion().y + 20));
+                carta.moverAlCentro(Gdx.graphics.getDeltaTime());
                 return true;
             }
         }
@@ -34,7 +39,7 @@ public class EntradaDosJugadores implements InputProcessor {
         for (CartaSolitario carta : cartasJugador2) {
             if (carta.fueClickeada(x, y)) {
                 System.out.println("Click en carta del Jugador 2: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
-                carta.setPosicion(new Vector2(carta.getPosicion().x, carta.getPosicion().y + 20));
+                carta.moverAlCentro(Gdx.graphics.getDeltaTime());
                 return true;
             }
         }
@@ -43,7 +48,7 @@ public class EntradaDosJugadores implements InputProcessor {
     }
 
 
-    // Métodos no usados
+
     @Override public boolean keyDown(int keycode) { return false; }
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }
