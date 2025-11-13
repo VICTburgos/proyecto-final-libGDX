@@ -12,7 +12,6 @@ public class ColisionesDosJugadores {
     private int resultadoTirada = -1;
     private boolean colisionProcesada = false; // evita procesar la misma colisión varias veces
 
-    // 🔢 Contadores de tiradas ganadas
     private int tiradasGanadasJ1 = 0;
     private int tiradasGanadasJ2 = 0;
 

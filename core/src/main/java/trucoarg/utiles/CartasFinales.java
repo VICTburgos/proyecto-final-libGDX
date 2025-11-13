@@ -18,7 +18,7 @@ public enum CartasFinales {
     // COPA
     C1C(1, PalosCartas.COPA, Recursos.ANCHO_COPA, 8),
     C2C(2, PalosCartas.COPA, Recursos.DOS_COPA, 9),
-    C3C(3, PalosCartas.COPA, Recursos.TRES_COPA, 3),
+    C3C(3, PalosCartas.COPA, Recursos.TRES_COPA, 10),
     C4C(4, PalosCartas.COPA, Recursos.CUATRO_COPA, 1),
     C5C(5, PalosCartas.COPA, Recursos.CINCO_COPA, 2),
     C6C(6, PalosCartas.COPA, Recursos.SEIS_COPA, 3),

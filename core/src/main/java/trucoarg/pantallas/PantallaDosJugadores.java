@@ -25,6 +25,8 @@ public class PantallaDosJugadores implements Screen {
     private JuegoTruco juego;
     private JugadorBase jugador1;
     private JugadorBase jugador2;
+    private boolean ganadorMostrado = false;
+
 
     private ColisionesDosJugadores colisiones;
     private int resultadoActual = -1;
@@ -69,7 +71,6 @@ public class PantallaDosJugadores implements Screen {
         Gdx.input.setInputProcessor(new EntradaDosJugadores(jugador1.getMano(), jugador2.getMano(), this));
     }
 
-    // NUEVO: llamado por EntradaDosJugadores cuando un jugador hace clic
     public void jugarCarta(CartaSolitario carta, int jugador) {
         List<CartaSolitario> jugadas = (jugador == 1) ? jugadasJ1 : jugadasJ2;
         Vector2[] posiciones = (jugador == 1) ? posicionesJugadasJ1 : posicionesJugadasJ2;
@@ -78,7 +79,13 @@ public class PantallaDosJugadores implements Screen {
             carta.setPosicion(posiciones[jugadas.size()]);
             jugadas.add(carta);
         }
+
+        if (jugadasJ1.size() == jugadasJ2.size()) {
+            ganadorMostrado = false;          // permitir mostrar ganador otra vez
+            colisiones.liberarColision();     // resetear solo la bandera de colisión
+        }
     }
+
 
     private void posicionarCartasJugadorAbajo(List<CartaSolitario> mano) {
         float xInicial = Configuracion.ANCHO / 2f - 300;
@@ -117,7 +124,8 @@ public class PantallaDosJugadores implements Screen {
         batch.end();
 
         resultadoActual = colisiones.verificarColisiones(jugadasJ1, jugadasJ2);
-        if (resultadoActual != -1) {
+
+        if (resultadoActual != -1 && !ganadorMostrado) {
             switch (resultadoActual) {
                 case 0:
                     System.out.println("Empate");
@@ -128,12 +136,11 @@ public class PantallaDosJugadores implements Screen {
                 case 2:
                     System.out.println("Ganó Jugador 2");
                     break;
-                default:
-                    break;
             }
 
-            colisiones.reset();
+            ganadorMostrado = true;
         }
+
     }
 
     @Override public void resize(int width, int height) {}
