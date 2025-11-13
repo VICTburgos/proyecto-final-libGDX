@@ -2,44 +2,42 @@ package trucoarg.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.math.Vector2;
+import trucoarg.pantallas.PantallaDosJugadores;
 import trucoarg.personajesSolitario.CartaSolitario;
-import trucoarg.utiles.Configuracion;
-
 import java.util.List;
 
 public class EntradaDosJugadores implements InputProcessor {
 
     private final List<CartaSolitario> cartasJugador1;
     private final List<CartaSolitario> cartasJugador2;
+    private final PantallaDosJugadores pantalla; // referencia a la pantalla principal
 
-
-    public EntradaDosJugadores(List<CartaSolitario> cartasJugador1, List<CartaSolitario> cartasJugador2) {
+    public EntradaDosJugadores(List<CartaSolitario> cartasJugador1, List<CartaSolitario> cartasJugador2, PantallaDosJugadores pantalla) {
         this.cartasJugador1 = cartasJugador1;
         this.cartasJugador2 = cartasJugador2;
+        this.pantalla = pantalla;
     }
-
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         float y = Gdx.graphics.getHeight() - screenY;
         float x = screenX;
 
-        float centroX = (Configuracion.ANCHO / 2f) - 50;
-        float centroY = (Configuracion.ALTO / 2f) - 100;
-
-        for (CartaSolitario carta : cartasJugador1) {
+        // 🔹 Recorremos con for normal
+        for (int i = 0; i < cartasJugador1.size(); i++) {
+            CartaSolitario carta = cartasJugador1.get(i);
             if (carta.fueClickeada(x, y)) {
                 System.out.println("Click en carta del Jugador 1: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
-                carta.moverAlCentro(Gdx.graphics.getDeltaTime());
+                pantalla.jugarCarta(carta, 1); // llama al método de la pantalla
                 return true;
             }
         }
 
-        for (CartaSolitario carta : cartasJugador2) {
+        for (int i = 0; i < cartasJugador2.size(); i++) {
+            CartaSolitario carta = cartasJugador2.get(i);
             if (carta.fueClickeada(x, y)) {
                 System.out.println("Click en carta del Jugador 2: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
-                carta.moverAlCentro(Gdx.graphics.getDeltaTime());
+                pantalla.jugarCarta(carta, 2);
                 return true;
             }
         }
@@ -47,8 +45,7 @@ public class EntradaDosJugadores implements InputProcessor {
         return false;
     }
 
-
-
+    // Métodos requeridos por InputProcessor
     @Override public boolean keyDown(int keycode) { return false; }
     @Override public boolean keyUp(int keycode) { return false; }
     @Override public boolean keyTyped(char character) { return false; }

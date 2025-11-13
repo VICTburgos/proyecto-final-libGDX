@@ -38,6 +38,7 @@ public class CartaSolitario extends Sprite {
     public int getNUMERO() {
         return NUMERO;
     }
+    public int getNIVEL(){return NIVEL;}
 
     public void dibujar(SpriteBatch b) {
         super.draw(b);
@@ -123,4 +124,6 @@ public class CartaSolitario extends Sprite {
     public float getVelocidad() {
         return velocidad;
     }
+
+
 }
