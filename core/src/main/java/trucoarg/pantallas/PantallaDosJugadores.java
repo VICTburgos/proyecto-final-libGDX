@@ -72,6 +72,10 @@ public class PantallaDosJugadores implements Screen {
     }
 
     public void jugarCarta(CartaSolitario carta, int jugador) {
+        if (carta.isYaJugadas()) return;
+
+        carta.setYaJugadas(true);
+
         List<CartaSolitario> jugadas = (jugador == 1) ? jugadasJ1 : jugadasJ2;
         Vector2[] posiciones = (jugador == 1) ? posicionesJugadasJ1 : posicionesJugadasJ2;
 
@@ -81,10 +85,11 @@ public class PantallaDosJugadores implements Screen {
         }
 
         if (jugadasJ1.size() == jugadasJ2.size()) {
-            ganadorMostrado = false;          // permitir mostrar ganador otra vez
-            colisiones.liberarColision();     // resetear solo la bandera de colisión
+            ganadorMostrado = false;
+            colisiones.liberarColision();
         }
     }
+
 
 
     private void posicionarCartasJugadorAbajo(List<CartaSolitario> mano) {

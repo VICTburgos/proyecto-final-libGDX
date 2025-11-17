@@ -26,21 +26,28 @@ public class EntradaDosJugadores implements InputProcessor {
         // 🔹 Recorremos con for normal
         for (int i = 0; i < cartasJugador1.size(); i++) {
             CartaSolitario carta = cartasJugador1.get(i);
+
             if (carta.fueClickeada(x, y)) {
-                System.out.println("Click en carta del Jugador 1: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
-                pantalla.jugarCarta(carta, 1); // llama al método de la pantalla
+
+                if (carta.isYaJugadas()) return true;
+
+                pantalla.jugarCarta(carta, 1);
                 return true;
             }
         }
 
         for (int i = 0; i < cartasJugador2.size(); i++) {
             CartaSolitario carta = cartasJugador2.get(i);
+
             if (carta.fueClickeada(x, y)) {
-                System.out.println("Click en carta del Jugador 2: " + carta.getNUMERO() + " de " + carta.getPALOS_CARTAS());
+
+                if (carta.isYaJugadas()) return true;
+
                 pantalla.jugarCarta(carta, 2);
                 return true;
             }
         }
+
 
         return false;
     }

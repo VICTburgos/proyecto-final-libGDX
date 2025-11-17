@@ -17,6 +17,7 @@ public class CartaSolitario extends Sprite {
     private final PalosCartas PALOS_CARTAS;
     private Vector2 posicion;
     private float velocidad = 300f;
+    private boolean yaJugadas;
 
     private Rectangle qcyo;
 
@@ -39,6 +40,9 @@ public class CartaSolitario extends Sprite {
         return NUMERO;
     }
     public int getNIVEL(){return NIVEL;}
+    public boolean isYaJugadas() { return yaJugadas; }
+    public void setYaJugadas(boolean y) { this.yaJugadas = y; }
+
 
     public void dibujar(SpriteBatch b) {
         super.draw(b);
