@@ -29,7 +29,7 @@ public class EntradaDosJugadores implements InputProcessor {
 
             if (carta.fueClickeada(x, y)) {
 
-                if (carta.isYaJugadas()) return true;
+                if (carta.getYaJugadas()) return true;
 
                 pantalla.jugarCarta(carta, 1);
                 return true;
@@ -41,7 +41,7 @@ public class EntradaDosJugadores implements InputProcessor {
 
             if (carta.fueClickeada(x, y)) {
 
-                if (carta.isYaJugadas()) return true;
+                if (carta.getYaJugadas()) return true;
 
                 pantalla.jugarCarta(carta, 2);
                 return true;

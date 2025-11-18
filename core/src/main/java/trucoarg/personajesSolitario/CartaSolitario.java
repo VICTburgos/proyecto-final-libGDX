@@ -40,7 +40,7 @@ public class CartaSolitario extends Sprite {
         return NUMERO;
     }
     public int getNIVEL(){return NIVEL;}
-    public boolean isYaJugadas() { return yaJugadas; }
+    public boolean getYaJugadas() { return yaJugadas; }
     public void setYaJugadas(boolean y) { this.yaJugadas = y; }
 
 
