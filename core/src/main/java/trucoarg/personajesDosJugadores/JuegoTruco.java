@@ -13,6 +13,8 @@ public class JuegoTruco {
     private final ColisionesDosJugadores colisiones;
 
     private boolean jugador1EsMano = false;
+    private final GestorDeCantos gestorCantos = new GestorDeCantos();
+
 
     private int manoOriginal;    // 1 o 2 → quién es mano en ESTA mano
     private int turnoActual = 1; // 1 o 2
@@ -59,6 +61,8 @@ public class JuegoTruco {
         cartaJugadaJ2 = null;
 
         System.out.println("Mano original: J" + manoOriginal);
+        gestorCantos.reset();
+
     }
 
     // jugarCarta: solo guarda carta y cambia turno (no reinicia mazo)
@@ -115,8 +119,11 @@ public class JuegoTruco {
         int ganadorMano = verificarFinDeMano();
         if (ganadorMano != -1) {
             manoTerminada = true;
-            if (ganadorMano == 1) puntosJ1++;
-            else puntosJ2++;
+            int puntos = gestorCantos.puntosDeLaMano();
+
+            if (ganadorMano == 1) puntosJ1 += puntos;
+            else puntosJ2 += puntos;
+
 
             System.out.println("\n***** FIN DE MANO *****");
             System.out.println("Ganador de la mano: J" + ganadorMano);
@@ -169,4 +176,28 @@ public class JuegoTruco {
         return turnoActual == jugador;
     }
 
-}
+        public boolean cantar(int jugador, String canto) {
+            if (manoTerminada) return false;
+            return gestorCantos.cantar(jugador, canto);
+        }
+
+        public int responderCanto(int jugador, boolean quiero) {
+            int resultado = gestorCantos.responder(jugador, quiero);
+
+            if (resultado > 0) {
+                manoTerminada = true;
+
+                if (resultado == 1) puntosJ1 += gestorCantos.puntosDeLaMano();
+                else puntosJ2 += gestorCantos.puntosDeLaMano();
+            }
+            return resultado;
+        }
+
+        public boolean hayCantoPendiente() {
+            return gestorCantos.estaEsperandoRespuesta();
+        }
+
+        public int getJugadorQueDebeResponder() {
+            return gestorCantos.getJugadorQueDebeResponder();
+        }
+    }
