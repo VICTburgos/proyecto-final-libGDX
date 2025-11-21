@@ -43,6 +43,10 @@ public class PantallaDosJugadores implements Screen {
     private Boton btnQuiero;
     private Boton btnNoQuiero;
 
+    private Boton btnEnvido;
+    private Boton btnRealEnvido;
+    private Boton btnFaltaEnvido;
+
     // Fuente para mostrar información
     private BitmapFont fuente;
 
@@ -122,8 +126,7 @@ public class PantallaDosJugadores implements Screen {
             btnQuiero.setVisible(true);
             btnNoQuiero.setVisible(true);
 
-            // AMBOS botones siempre habilitados cuando hay canto pendiente
-            // porque el que debe responder es el jugadorResponde
+            // Ambos botones siempre habilitados cuando hay canto pendiente
             btnQuiero.setHabilitado(true);
             btnNoQuiero.setHabilitado(true);
 
@@ -141,13 +144,15 @@ public class PantallaDosJugadores implements Screen {
 
             int turno = juego.getTurnoActual();
 
-            // Habilitar botones según las reglas
-            btnTruco.setHabilitado(!juego.isManoTerminada() &&
-                juego.puedeJugar(turno));
-            btnRetruco.setHabilitado(!juego.isManoTerminada() &&
-                juego.puedeJugar(turno));
-            btnValeCuatro.setHabilitado(!juego.isManoTerminada() &&
-                juego.puedeJugar(turno));
+            // Habilitar botones de canto SOLO si:
+            // 1. La mano no terminó
+            // 2. Es el turno del jugador actual
+            // 3. No hay canto pendiente (ya verificado arriba)
+            boolean puedeCantar = !juego.isManoTerminada();
+
+            btnTruco.setHabilitado(puedeCantar);
+            btnRetruco.setHabilitado(puedeCantar);
+            btnValeCuatro.setHabilitado(puedeCantar);
 
             mensajeEstado = "Turno: Jugador " + turno + " | Ronda " + juego.getTiradaActual();
         }
@@ -205,44 +210,27 @@ public class PantallaDosJugadores implements Screen {
     public void procesarClickBoton(Boton boton) {
         System.out.println("DEBUG: procesarClickBoton() - Botón: " + boton.getTexto());
 
-        int turno = juego.getTurnoActual();
+        if (boton == btnQuiero || boton == btnNoQuiero) {
+            // Procesar respuesta a canto
+            if (!juego.hayCantoPendiente()) {
+                System.out.println("DEBUG: No hay canto pendiente para responder");
+                return;
+            }
 
-        if (boton == btnTruco) {
-            if (juego.cantar(turno, "truco")) {
-                mensajeEstado = "Jugador " + turno + " cantó TRUCO!";
-                System.out.println("DEBUG: J" + turno + " cantó TRUCO");
-                actualizarEstadoBotones();
-            } else {
-                System.out.println("DEBUG: No se pudo cantar TRUCO");
-            }
-        } else if (boton == btnRetruco) {
-            if (juego.cantar(turno, "retruco")) {
-                mensajeEstado = "Jugador " + turno + " cantó RETRUCO!";
-                System.out.println("DEBUG: J" + turno + " cantó RETRUCO");
-                actualizarEstadoBotones();
-            } else {
-                System.out.println("DEBUG: No se pudo cantar RETRUCO");
-            }
-        } else if (boton == btnValeCuatro) {
-            if (juego.cantar(turno, "vale cuatro")) {
-                mensajeEstado = "Jugador " + turno + " cantó VALE CUATRO!";
-                System.out.println("DEBUG: J" + turno + " cantó VALE CUATRO");
-                actualizarEstadoBotones();
-            } else {
-                System.out.println("DEBUG: No se pudo cantar VALE CUATRO");
-            }
-        } else if (boton == btnQuiero) {
             int jugadorResponde = juego.getJugadorQueDebeResponder();
-            System.out.println("DEBUG: Intentando QUIERO - Debe responder J" + jugadorResponde);
+            boolean quiero = (boton == btnQuiero);
 
-            int resultado = juego.responderCanto(jugadorResponde, true);
-            System.out.println("DEBUG: Resultado respuesta QUIERO: " + resultado);
+            System.out.println("DEBUG: J" + jugadorResponde + " responde: " + (quiero ? "QUIERO" : "NO QUIERO"));
+
+            int resultado = juego.responderCanto(jugadorResponde, quiero);
+            System.out.println("DEBUG: Resultado respuesta: " + resultado);
 
             if (resultado > 0) {
                 // Alguien ganó la mano por el canto
                 mensajeEstado = "Jugador " + resultado + " ganó la mano! J1: " +
                     juego.getPuntosJ1() + " - J2: " + juego.getPuntosJ2();
 
+                // Reiniciar mano
                 juego.reiniciarManoSiCorresponde();
                 jugador1 = juego.getJugador1();
                 jugador2 = juego.getJugador2();
@@ -254,28 +242,34 @@ public class PantallaDosJugadores implements Screen {
                 // QUIERO - se continúa jugando
                 mensajeEstado = "QUIERO! Se juega al valor cantado";
             }
+
             actualizarEstadoBotones();
+            return;
+        }
 
-        } else if (boton == btnNoQuiero) {
-            int jugadorResponde = juego.getJugadorQueDebeResponder();
-            System.out.println("DEBUG: Intentando NO QUIERO - Debe responder J" + jugadorResponde);
+        // Procesar cantos (Truco, Retruco, Vale Cuatro)
+        int turno = juego.getTurnoActual();
+        String tipoCanto = null;
 
-            int resultado = juego.responderCanto(jugadorResponde, false);
-            System.out.println("DEBUG: Resultado respuesta NO QUIERO: " + resultado);
+        if (boton == btnTruco) {
+            tipoCanto = "truco";
+        } else if (boton == btnRetruco) {
+            tipoCanto = "retruco";
+        } else if (boton == btnValeCuatro) {
+            tipoCanto = "vale cuatro";
+        }
 
-            if (resultado > 0) {
-                mensajeEstado = "NO QUIERO! Jugador " + resultado + " gana la mano. J1: " +
-                    juego.getPuntosJ1() + " - J2: " + juego.getPuntosJ2();
+        if (tipoCanto != null) {
+            System.out.println("DEBUG: J" + turno + " intenta cantar " + tipoCanto.toUpperCase());
 
-                juego.reiniciarManoSiCorresponde();
-                jugador1 = juego.getJugador1();
-                jugador2 = juego.getJugador2();
-                jugadasJ1.clear();
-                jugadasJ2.clear();
-                posicionarCartasJugadorAbajo(jugador1.getMano());
-                posicionarCartasJugadorArriba(jugador2.getMano());
+            if (juego.cantar(turno, tipoCanto)) {
+                mensajeEstado = "Jugador " + turno + " cantó " + tipoCanto.toUpperCase() + "!";
+                System.out.println("DEBUG: Canto exitoso");
+                actualizarEstadoBotones();
+            } else {
+                System.out.println("DEBUG: No se pudo cantar " + tipoCanto);
+                mensajeEstado = "No puedes cantar " + tipoCanto.toUpperCase() + " ahora";
             }
-            actualizarEstadoBotones();
         }
     }
 

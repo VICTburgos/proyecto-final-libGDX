@@ -2,125 +2,160 @@ package trucoarg.personajesDosJugadores;
 
 public class GestorDeCantos {
 
-    private int nivelCanto = 1;
+    private String cantoActual = null; // "truco", "retruco", "vale cuatro"
+    private int jugadorQueCanto = -1;
+    private boolean esperandoRespuesta = false;
     private boolean cantoAceptado = false;
 
-    private int jugadorQueCanto = 0;
-    private boolean esperandoRespuesta = false;
-    private int jugadorQueDebeResponder = 0;
+    // Puntos que vale cada nivel
+    private static final int PUNTOS_TRUCO = 2;
+    private static final int PUNTOS_RETRUCO = 3;
+    private static final int PUNTOS_VALE_CUATRO = 4;
 
-    public boolean puedeCantar(int jugador, String canto) {
-        // No se puede cantar si hay un canto pendiente de respuesta
-        if (esperandoRespuesta) return false;
-
-        switch (canto.toLowerCase()) {
-            case "truco":
-                return nivelCanto == 1;
-            case "retruco":
-                return nivelCanto == 2 && cantoAceptado;
-            case "vale cuatro":
-                return nivelCanto == 3 && cantoAceptado;
-        }
-
-        return false;
+    public void reset() {
+        cantoActual = null;
+        jugadorQueCanto = -1;
+        esperandoRespuesta = false;
+        cantoAceptado = false;
     }
 
+    /**
+     * Intenta cantar truco/retruco/vale cuatro
+     * @param jugador El jugador que canta (1 o 2)
+     * @param canto El tipo de canto ("truco", "retruco", "vale cuatro")
+     * @return true si el canto fue exitoso
+     */
     public boolean cantar(int jugador, String canto) {
-        System.out.println("DEBUG GestorCantos: J" + jugador + " intenta cantar '" + canto + "'");
+        String cantoLower = canto.toLowerCase().trim();
 
-        if (!puedeCantar(jugador, canto)) {
-            System.out.println("DEBUG GestorCantos: No se puede cantar ahora");
+        System.out.println("DEBUG GestorCantos.cantar() - J" + jugador + " intenta cantar: " + cantoLower);
+        System.out.println("  Estado actual: cantoActual=" + cantoActual + ", esperandoRespuesta=" + esperandoRespuesta);
+
+        // No se puede cantar si hay un canto pendiente de respuesta
+        if (esperandoRespuesta) {
+            System.out.println("  RECHAZADO: Hay canto pendiente");
             return false;
         }
 
-        switch (canto.toLowerCase()) {
-            case "truco":
-                nivelCanto = 2;
-                System.out.println("DEBUG GestorCantos: Nivel subió a 2 (Truco)");
-                break;
-            case "retruco":
-                nivelCanto = 3;
-                System.out.println("DEBUG GestorCantos: Nivel subió a 3 (Retruco)");
-                break;
-            case "vale cuatro":
-                nivelCanto = 4;
-                System.out.println("DEBUG GestorCantos: Nivel subió a 4 (Vale Cuatro)");
-                break;
+        // Validar secuencia de cantos
+        if (cantoLower.equals("truco")) {
+            // Truco solo si no hay ningún canto previo
+            if (cantoActual != null) {
+                System.out.println("  RECHAZADO: Ya hay canto activo");
+                return false;
+            }
+            cantoActual = "truco";
+
+        } else if (cantoLower.equals("retruco")) {
+            // Retruco solo si hay truco aceptado y lo canta el otro jugador
+            if (cantoActual == null || !cantoActual.equals("truco") || !cantoAceptado) {
+                System.out.println("  RECHAZADO: No hay truco aceptado para retruco");
+                return false;
+            }
+            if (jugador == jugadorQueCanto) {
+                System.out.println("  RECHAZADO: El mismo jugador no puede retrucarse a sí mismo");
+                return false;
+            }
+            cantoActual = "retruco";
+
+        } else if (cantoLower.equals("vale cuatro") || cantoLower.equals("vale 4")) {
+            // Vale cuatro solo si hay retruco aceptado y lo canta el otro jugador
+            if (cantoActual == null || !cantoActual.equals("retruco") || !cantoAceptado) {
+                System.out.println("  RECHAZADO: No hay retruco aceptado para vale cuatro");
+                return false;
+            }
+            if (jugador == jugadorQueCanto) {
+                System.out.println("  RECHAZADO: El mismo jugador no puede hacer vale cuatro después de su retruco");
+                return false;
+            }
+            cantoActual = "vale cuatro";
+
+        } else {
+            System.out.println("  RECHAZADO: Canto desconocido");
+            return false;
         }
 
         jugadorQueCanto = jugador;
         esperandoRespuesta = true;
-        jugadorQueDebeResponder = (jugador == 1) ? 2 : 1;
+        cantoAceptado = false;
 
-        System.out.println("DEBUG GestorCantos: J" + jugadorQueDebeResponder + " debe responder");
+        System.out.println("  ÉXITO: Canto registrado. Esperando respuesta del J" + getJugadorQueDebeResponder());
         return true;
     }
 
     /**
-     * @param jugador El jugador que está respondiendo
-     * @param quiero true = QUIERO, false = NO QUIERO
-     * @return
-     * 0 -> QUIERO (se sigue jugando)
-     * 1 -> gana J1
-     * 2 -> gana J2
-     * -1 -> inválido
+     * Responde al canto pendiente
+     * @param jugador El jugador que responde
+     * @param quiero true si acepta, false si rechaza
+     * @return 0 si continúa jugando, >0 si alguien ganó la mano (número del ganador)
      */
     public int responder(int jugador, boolean quiero) {
-        System.out.println("DEBUG GestorCantos: responder() - J" + jugador +
-            " dice " + (quiero ? "QUIERO" : "NO QUIERO"));
+        System.out.println("DEBUG GestorCantos.responder() - J" + jugador + " responde: " + (quiero ? "QUIERO" : "NO QUIERO"));
+        System.out.println("  Estado: cantoActual=" + cantoActual + ", jugadorQueCanto=" + jugadorQueCanto);
 
         if (!esperandoRespuesta) {
-            System.out.println("DEBUG GestorCantos: No hay canto pendiente");
+            System.out.println("  ERROR: No hay canto pendiente");
             return -1;
         }
 
-        // Verificar que sea el jugador correcto quien responde
-        if (jugador != jugadorQueDebeResponder) {
-            System.out.println("DEBUG GestorCantos: No es tu turno de responder. Debe responder J" + jugadorQueDebeResponder);
+        if (jugador == jugadorQueCanto) {
+            System.out.println("  ERROR: El jugador que cantó no puede responder");
             return -1;
         }
 
         esperandoRespuesta = false;
 
-        if (!quiero) {
-            // NO QUIERO → gana el que cantó
-            cantoAceptado = false;
-            System.out.println("DEBUG GestorCantos: NO QUIERO - Gana J" + jugadorQueCanto);
+        if (quiero) {
+            // Acepta el canto, se sigue jugando
+            cantoAceptado = true;
+            System.out.println("  Canto aceptado. Se juega por " + puntosDeLaMano() + " puntos");
+            return 0;
+
+        } else {
+            // Rechaza el canto, gana el que cantó
+            System.out.println("  Canto rechazado. Gana J" + jugadorQueCanto);
             return jugadorQueCanto;
         }
-
-        // QUIERO → seguimos la mano con el valor cantado
-        cantoAceptado = true;
-        jugadorQueDebeResponder = 0;
-        System.out.println("DEBUG GestorCantos: QUIERO - Se sigue jugando");
-        return 0;
     }
 
-    /** Puntos reales según reglas del truco */
+    /**
+     * @return Los puntos que vale la mano actual (sin canto = 1, con cantos según nivel)
+     */
     public int puntosDeLaMano() {
-        if (!cantoAceptado) {
-            // NO QUIERO → vale el nivel anterior
-            int puntos = Math.max(1, nivelCanto - 1);
-            System.out.println("DEBUG GestorCantos: Puntos por NO QUIERO = " + puntos);
-            return puntos;
+        if (cantoActual == null || !cantoAceptado) {
+            return 1; // Mano sin canto vale 1 punto
         }
 
-        // QUIERO → vale el nivel actual
-        System.out.println("DEBUG GestorCantos: Puntos por QUIERO = " + nivelCanto);
-        return nivelCanto;
+        switch (cantoActual) {
+            case "truco":
+                return PUNTOS_TRUCO;
+            case "retruco":
+                return PUNTOS_RETRUCO;
+            case "vale cuatro":
+                return PUNTOS_VALE_CUATRO;
+            default:
+                return 1;
+        }
     }
 
-    public void reset() {
-        System.out.println("DEBUG GestorCantos: reset()");
-        nivelCanto = 1;
-        cantoAceptado = false;
-        jugadorQueCanto = 0;
-        esperandoRespuesta = false;
-        jugadorQueDebeResponder = 0;
+    public boolean estaEsperandoRespuesta() {
+        return esperandoRespuesta;
     }
 
-    public int getNivelCanto() { return nivelCanto; }
-    public boolean estaEsperandoRespuesta() { return esperandoRespuesta; }
-    public int getJugadorQueDebeResponder() { return jugadorQueDebeResponder; }
-    public boolean isCantoAceptado() { return cantoAceptado; }
+    public int getJugadorQueDebeResponder() {
+        if (!esperandoRespuesta) return -1;
+        return jugadorQueCanto == 1 ? 2 : 1;
+    }
+
+    public String getCantoActual() {
+        return cantoActual;
+    }
+
+    public int getJugadorQueCanto() {
+        return jugadorQueCanto;
+    }
+
+    public boolean isCantoAceptado() {
+        return cantoAceptado;
+    }
 }

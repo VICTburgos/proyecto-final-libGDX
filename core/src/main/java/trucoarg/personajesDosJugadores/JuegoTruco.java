@@ -31,6 +31,7 @@ public class JuegoTruco {
     private int puntosJ1 = 0;
     private int puntosJ2 = 0;
 
+
     public JuegoTruco() {
         mazo = new MazoSolitario();
         colisiones = new ColisionesDosJugadores();
@@ -176,10 +177,16 @@ public class JuegoTruco {
         return turnoActual == jugador;
     }
 
-        public boolean cantar(int jugador, String canto) {
-            if (manoTerminada) return false;
-            return gestorCantos.cantar(jugador, canto);
+    // Cambiar esta línea (línea ~159):
+    public boolean cantar(int jugador, String canto) {
+        if (manoTerminada) return false;
+        // CAMBIO: Verificar que sea el turno del jugador que canta
+        if (jugador != turnoActual) {
+            System.out.println("No es turno de J" + jugador);
+            return false;
         }
+        return gestorCantos.cantar(jugador, canto);
+    }
 
         public int responderCanto(int jugador, boolean quiero) {
             int resultado = gestorCantos.responder(jugador, quiero);
@@ -200,4 +207,5 @@ public class JuegoTruco {
         public int getJugadorQueDebeResponder() {
             return gestorCantos.getJugadorQueDebeResponder();
         }
+
     }
