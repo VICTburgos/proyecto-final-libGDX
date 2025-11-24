@@ -8,29 +8,24 @@ public class JuegoTruco {
 
     private JugadorBase jugador1;
     private JugadorBase jugador2;
-
     private final MazoSolitario mazo;
     private final ColisionesDosJugadores colisiones;
-
     private boolean jugador1EsMano = false;
-    private final GestorDeCantos gestorCantos = new GestorDeCantos();
 
+    private final Truco gestorTruco = new Truco();
+    private final Envido gestorEnvido = new Envido();
 
-    private int manoOriginal;    // 1 o 2 → quién es mano en ESTA mano
-    private int turnoActual = 1; // 1 o 2
-    private int tiradaActual = 1; // 1..3
-
+    private int manoOriginal;
+    private int turnoActual = 1;
+    private int tiradaActual = 1;
     private int rondasGanadasJ1 = 0;
     private int rondasGanadasJ2 = 0;
-
     private boolean manoTerminada = false;
-
     private CartaSolitario cartaJugadaJ1 = null;
     private CartaSolitario cartaJugadaJ2 = null;
 
     private int puntosJ1 = 0;
     private int puntosJ2 = 0;
-
 
     public JuegoTruco() {
         mazo = new MazoSolitario();
@@ -41,7 +36,6 @@ public class JuegoTruco {
     public void iniciarNuevaMano() {
         System.out.println("\n===== iniciarNuevaMano() llamado =====");
 
-        // Reinicio de mazo SOLO aquí (cuando verdaderamente empezamos una nueva mano)
         mazo.reiniciarMazo();
         colisiones.reset();
 
@@ -55,18 +49,16 @@ public class JuegoTruco {
         tiradaActual = 1;
         rondasGanadasJ1 = 0;
         rondasGanadasJ2 = 0;
-
         turnoActual = manoOriginal;
-
         cartaJugadaJ1 = null;
         cartaJugadaJ2 = null;
 
         System.out.println("Mano original: J" + manoOriginal);
-        gestorCantos.reset();
 
+        gestorTruco.reset();
+        gestorEnvido.reset();
     }
 
-    // jugarCarta: solo guarda carta y cambia turno (no reinicia mazo)
     public boolean jugarCarta(int jugador, CartaSolitario carta) {
         if (manoTerminada) return false;
         if (jugador != turnoActual) return false;
@@ -87,21 +79,23 @@ public class JuegoTruco {
             System.out.println("J2 jugó (nivel=" + carta.getNIVEL() + ")");
             return true;
         }
+
         return false;
     }
 
-    // procesar tirada: compara las 2 cartas y actualiza estado
     public int procesarTirada() {
         if (manoTerminada) return -1;
         if (cartaJugadaJ1 == null || cartaJugadaJ2 == null) return -1;
 
         System.out.println("\n--- procesarTirada() Ronda " + tiradaActual + " ---");
 
-        // uso comparación directa (colisiones hace similar pero así queda consistente)
         int resultado;
-        if (cartaJugadaJ1.getNIVEL() > cartaJugadaJ2.getNIVEL()) resultado = 1;
-        else if (cartaJugadaJ2.getNIVEL() > cartaJugadaJ1.getNIVEL()) resultado = 2;
-        else resultado = 0;
+        if (cartaJugadaJ1.getNIVEL() > cartaJugadaJ2.getNIVEL())
+            resultado = 1;
+        else if (cartaJugadaJ2.getNIVEL() > cartaJugadaJ1.getNIVEL())
+            resultado = 2;
+        else
+            resultado = 0;
 
         if (resultado == 1) {
             System.out.println("Gana tirada J1");
@@ -113,18 +107,18 @@ public class JuegoTruco {
             turnoActual = 2;
         } else {
             System.out.println("Parda en la tirada");
-            turnoActual = manoOriginal; // parda -> empieza el mano
+            turnoActual = manoOriginal;
         }
 
-        // Verificar fin de la mano según reglas:
         int ganadorMano = verificarFinDeMano();
         if (ganadorMano != -1) {
             manoTerminada = true;
-            int puntos = gestorCantos.puntosDeLaMano();
 
-            if (ganadorMano == 1) puntosJ1 += puntos;
-            else puntosJ2 += puntos;
-
+            int puntosTruco = gestorTruco.getPuntos();
+            if (ganadorMano == 1)
+                puntosJ1 += puntosTruco;
+            else
+                puntosJ2 += puntosTruco;
 
             System.out.println("\n***** FIN DE MANO *****");
             System.out.println("Ganador de la mano: J" + ganadorMano);
@@ -132,7 +126,6 @@ public class JuegoTruco {
             return ganadorMano;
         }
 
-        // preparar siguiente ronda
         tiradaActual++;
         cartaJugadaJ1 = null;
         cartaJugadaJ2 = null;
@@ -142,70 +135,160 @@ public class JuegoTruco {
     }
 
     private int verificarFinDeMano() {
-        // si alguien ya ganó 2 rondas
         if (rondasGanadasJ1 == 2) return 1;
         if (rondasGanadasJ2 == 2) return 2;
 
-        // si se jugaron 3 tiradas, decidir por quien ganó más o mano en triple empate
         if (tiradaActual == 3) {
             if (rondasGanadasJ1 > rondasGanadasJ2) return 1;
             if (rondasGanadasJ2 > rondasGanadasJ1) return 2;
-            // empate 0-0 o 1-1 -> gana manoOriginal
             return manoOriginal;
         }
 
         return -1;
     }
 
-    // getters para que la pantalla controle reinicio correctamente
-    public boolean isManoTerminada() { return manoTerminada; }
-    public int getTurnoActual() { return turnoActual; }
-    public int getTiradaActual() { return tiradaActual; }
-    public int getPuntosJ1() { return puntosJ1; }
-    public int getPuntosJ2() { return puntosJ2; }
-    public JugadorBase getJugador1() { return jugador1; }
-    public JugadorBase getJugador2() { return jugador2; }
+    public boolean cantar(int jugador, String canto) {
+        if (manoTerminada) return false;
 
-    // método para forzar reinicio visual/estado desde pantalla (si pantalla quiere)
+        if (jugador != turnoActual) {
+            System.out.println("No es turno de J" + jugador);
+            return false;
+        }
+
+        return gestorTruco.cantar(jugador, canto);
+    }
+
+    public boolean cantarEnvido(int jugador, String tipoEnvido) {
+        if (manoTerminada) return false;
+
+        if (tiradaActual > 1) {
+            System.out.println("El envido solo se puede cantar en la primera tirada");
+            return false;
+        }
+
+        if (jugador != turnoActual) {
+            System.out.println("No es turno de J" + jugador);
+            return false;
+        }
+
+        return gestorEnvido.cantar(jugador, tipoEnvido);
+    }
+
+    public int responderCanto(int jugador, boolean quiero) {
+        int resultado = gestorTruco.responder(jugador, quiero);
+
+        if (resultado > 0) {
+            manoTerminada = true;
+
+            if (resultado == 1)
+                puntosJ1 += gestorTruco.getPuntos();
+            else
+                puntosJ2 += gestorTruco.getPuntos();
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Responde a un canto de envido
+     * El envido NO termina la mano, solo suma puntos
+     */
+    public int responderEnvido(int jugador, boolean quiero) {
+        int resultado = gestorEnvido.responder(jugador, quiero);
+
+        if (resultado == 0) {
+            // Envido aceptado: quien lo cantó suma puntos
+            int ganador = gestorEnvido.getJugadorQueCanto();
+            int puntosEnvido = gestorEnvido.getPuntos();
+
+            if (ganador == 1) {
+                puntosJ1 += puntosEnvido;
+                System.out.println("J1 suma " + puntosEnvido + " puntos por envido");
+            } else {
+                puntosJ2 += puntosEnvido;
+                System.out.println("J2 suma " + puntosEnvido + " puntos por envido");
+            }
+
+            // IMPORTANTE: Reset del envido después de procesarlo
+            gestorEnvido.reset();
+
+        } else if (resultado > 0) {
+            // Envido rechazado: quien lo cantó gana los puntos
+            int puntosEnvido = gestorEnvido.getPuntos();
+
+            if (resultado == 1) {
+                puntosJ1 += puntosEnvido;
+                System.out.println("J1 suma " + puntosEnvido + " puntos (envido rechazado)");
+            } else {
+                puntosJ2 += puntosEnvido;
+                System.out.println("J2 suma " + puntosEnvido + " puntos (envido rechazado)");
+            }
+
+            // Reset del envido después de procesarlo
+            gestorEnvido.reset();
+        }
+
+        return resultado;
+    }
+
+    public boolean hayCantoPendiente() {
+        return gestorTruco.estaEsperandoRespuesta() || gestorEnvido.estaEsperandoRespuesta();
+    }
+
+    public int getJugadorQueDebeResponder() {
+        if (gestorTruco.estaEsperandoRespuesta()) {
+            return gestorTruco.getJugadorQueDebeResponder();
+        }
+        if (gestorEnvido.estaEsperandoRespuesta()) {
+            return gestorEnvido.getJugadorQueDebeResponder();
+        }
+        return -1;
+    }
+
+    public boolean isManoTerminada() {
+        return manoTerminada;
+    }
+
+    public int getTurnoActual() {
+        return turnoActual;
+    }
+
+    public int getTiradaActual() {
+        return tiradaActual;
+    }
+
+    public int getPuntosJ1() {
+        return puntosJ1;
+    }
+
+    public int getPuntosJ2() {
+        return puntosJ2;
+    }
+
+    public JugadorBase getJugador1() {
+        return jugador1;
+    }
+
+    public JugadorBase getJugador2() {
+        return jugador2;
+    }
+
     public void reiniciarManoSiCorresponde() {
         if (manoTerminada) {
             iniciarNuevaMano();
         }
     }
+
     public boolean puedeJugar(int jugador) {
         if (manoTerminada) return false;
         return turnoActual == jugador;
     }
 
-    // Cambiar esta línea (línea ~159):
-    public boolean cantar(int jugador, String canto) {
-        if (manoTerminada) return false;
-        // CAMBIO: Verificar que sea el turno del jugador que canta
-        if (jugador != turnoActual) {
-            System.out.println("No es turno de J" + jugador);
-            return false;
-        }
-        return gestorCantos.cantar(jugador, canto);
+    public Truco getGestorTruco() {
+        return gestorTruco;
     }
 
-        public int responderCanto(int jugador, boolean quiero) {
-            int resultado = gestorCantos.responder(jugador, quiero);
-
-            if (resultado > 0) {
-                manoTerminada = true;
-
-                if (resultado == 1) puntosJ1 += gestorCantos.puntosDeLaMano();
-                else puntosJ2 += gestorCantos.puntosDeLaMano();
-            }
-            return resultado;
-        }
-
-        public boolean hayCantoPendiente() {
-            return gestorCantos.estaEsperandoRespuesta();
-        }
-
-        public int getJugadorQueDebeResponder() {
-            return gestorCantos.getJugadorQueDebeResponder();
-        }
-
+    public Envido getGestorEnvido() {
+        return gestorEnvido;
     }
+}

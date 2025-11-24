@@ -36,22 +36,28 @@ public class PantallaDosJugadores implements Screen {
     private final Vector2[] posicionesJugadasJ1 = new Vector2[3];
     private final Vector2[] posicionesJugadasJ2 = new Vector2[3];
 
-    // Botones de canto
+    // Botones de canto de TRUCO (izquierda)
     private Boton btnTruco;
     private Boton btnRetruco;
     private Boton btnValeCuatro;
-    private Boton btnQuiero;
-    private Boton btnNoQuiero;
 
+    // Botones de canto de ENVIDO (izquierda, debajo del truco)
     private Boton btnEnvido;
     private Boton btnRealEnvido;
     private Boton btnFaltaEnvido;
+
+    // Botones de respuesta (derecha)
+    private Boton btnQuiero;
+    private Boton btnNoQuiero;
 
     // Fuente para mostrar información
     private BitmapFont fuente;
 
     // Texto de estado
     private String mensajeEstado = "";
+
+    // Tipo de canto pendiente ("truco" o "envido")
+    private String tipoCantoPendiente = null;
 
     @Override
     public void show() {
@@ -85,76 +91,141 @@ public class PantallaDosJugadores implements Screen {
         float btnAncho = 150;
         float btnAlto = 50;
         float margen = 20;
-        float centroX = Configuracion.ANCHO / 2f;
+        float separacion = 10;
 
-        // Botones de canto (izquierda)
-        btnTruco = new Boton("TRUCO", margen, Configuracion.ALTO / 2f + 50, btnAncho, btnAlto);
-        btnRetruco = new Boton("RETRUCO", margen, Configuracion.ALTO / 2f - 20, btnAncho, btnAlto);
-        btnValeCuatro = new Boton("VALE 4", margen, Configuracion.ALTO / 2f - 90, btnAncho, btnAlto);
-
-        // Botones de respuesta (derecha)
-        btnQuiero = new Boton("QUIERO", Configuracion.ANCHO - btnAncho - margen,
-            Configuracion.ALTO / 2f + 50, btnAncho, btnAlto);
-        btnNoQuiero = new Boton("NO QUIERO", Configuracion.ANCHO - btnAncho - margen,
-            Configuracion.ALTO / 2f - 20, btnAncho, btnAlto);
-
-        // Estilo argentino (celeste y blanco)
+        // Colores comunes
         Color azulArg = new Color(0.4f, 0.6f, 0.85f, 0.9f);
+        Color violeta = new Color(0.6f, 0.3f, 0.8f, 0.9f);
         Color blanco = Color.WHITE;
         Color borde = new Color(0.2f, 0.4f, 0.6f, 1f);
+        Color verde = new Color(0.2f, 0.7f, 0.3f, 0.9f);
+        Color rojo = new Color(0.8f, 0.2f, 0.2f, 0.9f);
+
+        // ===== BOTONES DE TRUCO (izquierda arriba) =====
+        float trucoPosY = Configuracion.ALTO / 2f + 100;
+
+        btnTruco = new Boton("TRUCO", margen, trucoPosY, btnAncho, btnAlto);
+        btnRetruco = new Boton("RETRUCO", margen, trucoPosY - btnAlto - separacion, btnAncho, btnAlto);
+        btnValeCuatro = new Boton("VALE 4", margen, trucoPosY - (btnAlto + separacion) * 2, btnAncho, btnAlto);
 
         btnTruco.setColor(azulArg, blanco, borde);
         btnRetruco.setColor(azulArg, blanco, borde);
         btnValeCuatro.setColor(azulArg, blanco, borde);
 
-        Color verde = new Color(0.2f, 0.7f, 0.3f, 0.9f);
-        Color rojo = new Color(0.8f, 0.2f, 0.2f, 0.9f);
+        // ===== BOTONES DE ENVIDO (izquierda abajo) =====
+        float envidoPosY = Configuracion.ALTO / 2f - 50;
+
+        btnEnvido = new Boton("ENVIDO", margen, envidoPosY, btnAncho, btnAlto);
+        btnRealEnvido = new Boton("REAL ENVIDO", margen, envidoPosY - btnAlto - separacion, btnAncho, btnAlto);
+        btnFaltaEnvido = new Boton("FALTA ENVIDO", margen, envidoPosY - (btnAlto + separacion) * 2, btnAncho, btnAlto);
+
+        btnEnvido.setColor(violeta, blanco, borde);
+        btnRealEnvido.setColor(violeta, blanco, borde);
+        btnFaltaEnvido.setColor(violeta, blanco, borde);
+
+        // ===== BOTONES DE RESPUESTA (derecha) =====
+        float respuestaPosY = Configuracion.ALTO / 2f + 50;
+
+        btnQuiero = new Boton("QUIERO", Configuracion.ANCHO - btnAncho - margen,
+            respuestaPosY, btnAncho, btnAlto);
+        btnNoQuiero = new Boton("NO QUIERO", Configuracion.ANCHO - btnAncho - margen,
+            respuestaPosY - btnAlto - separacion, btnAncho, btnAlto);
 
         btnQuiero.setColor(verde, blanco, borde);
         btnNoQuiero.setColor(rojo, blanco, borde);
     }
 
     private void actualizarEstadoBotones() {
-        // Si hay un canto pendiente, solo mostrar botones de respuesta
-        if (juego.hayCantoPendiente()) {
+        // Verificar si hay canto pendiente
+        boolean hayTrucoPendiente = juego.getGestorTruco().estaEsperandoRespuesta();
+        boolean hayEnvidoPendiente = juego.getGestorEnvido().estaEsperandoRespuesta();
+
+        if (hayTrucoPendiente || hayEnvidoPendiente) {
+            // HAY CANTO PENDIENTE
             int jugadorResponde = juego.getJugadorQueDebeResponder();
 
-            btnTruco.setVisible(false);
-            btnRetruco.setVisible(false);
-            btnValeCuatro.setVisible(false);
+            if (hayTrucoPendiente) {
+                tipoCantoPendiente = "truco";
+                String cantoActual = juego.getGestorTruco().getCantoActual();
+                mensajeEstado = "J" + jugadorResponde + " debe responder " + cantoActual.toUpperCase();
 
-            btnQuiero.setVisible(true);
-            btnNoQuiero.setVisible(true);
+                // Para truco: solo mostrar Quiero/No Quiero
+                btnTruco.setVisible(false);
+                btnRetruco.setVisible(false);
+                btnValeCuatro.setVisible(false);
+                btnEnvido.setVisible(false);
+                btnRealEnvido.setVisible(false);
+                btnFaltaEnvido.setVisible(false);
 
-            // Ambos botones siempre habilitados cuando hay canto pendiente
-            btnQuiero.setHabilitado(true);
-            btnNoQuiero.setHabilitado(true);
+                btnQuiero.setVisible(true);
+                btnNoQuiero.setVisible(true);
+                btnQuiero.setHabilitado(true);
+                btnNoQuiero.setHabilitado(true);
 
-            mensajeEstado = "Jugador " + jugadorResponde + " debe responder el canto";
+            } else {
+                // ENVIDO PENDIENTE - Mostrar botones de respuesta Y opciones para subir
+                tipoCantoPendiente = "envido";
+                String cantoActual = juego.getGestorEnvido().getCantoActual();
+                mensajeEstado = "J" + jugadorResponde + " puede QUIERO/NO QUIERO o SUBIR " + cantoActual.toUpperCase();
 
-            System.out.println("DEBUG: Canto pendiente. J" + jugadorResponde + " debe responder");
+                // Ocultar botones de truco
+                btnTruco.setVisible(false);
+                btnRetruco.setVisible(false);
+                btnValeCuatro.setVisible(false);
+
+                // Mostrar botones de respuesta
+                btnQuiero.setVisible(true);
+                btnNoQuiero.setVisible(true);
+                btnQuiero.setHabilitado(true);
+                btnNoQuiero.setHabilitado(true);
+
+                // Mostrar botones de envido según lo que se puede "subir"
+                boolean puedeEnvido = juego.getGestorEnvido().puedeSubirConEnvido();
+                boolean puedeReal = juego.getGestorEnvido().puedeSubirConRealEnvido();
+                boolean puedeFalta = juego.getGestorEnvido().puedeSubirConFaltaEnvido();
+
+                btnEnvido.setVisible(puedeEnvido);
+                btnEnvido.setHabilitado(puedeEnvido);
+
+                btnRealEnvido.setVisible(puedeReal);
+                btnRealEnvido.setHabilitado(puedeReal);
+
+                btnFaltaEnvido.setVisible(puedeFalta);
+                btnFaltaEnvido.setHabilitado(puedeFalta);
+            }
+
         } else {
-            // Modo normal: mostrar botones de canto
+            // NO HAY CANTO PENDIENTE - Modo normal
+            tipoCantoPendiente = null;
+
             btnQuiero.setVisible(false);
             btnNoQuiero.setVisible(false);
 
-            btnTruco.setVisible(true);
-            btnRetruco.setVisible(true);
-            btnValeCuatro.setVisible(true);
+            boolean manoTerminada = juego.isManoTerminada();
+            int tiradaActual = juego.getTiradaActual();
 
-            int turno = juego.getTurnoActual();
+            // BOTONES DE TRUCO: siempre visibles si la mano no terminó
+            btnTruco.setVisible(!manoTerminada);
+            btnRetruco.setVisible(!manoTerminada);
+            btnValeCuatro.setVisible(!manoTerminada);
 
-            // Habilitar botones de canto SOLO si:
-            // 1. La mano no terminó
-            // 2. Es el turno del jugador actual
-            // 3. No hay canto pendiente (ya verificado arriba)
-            boolean puedeCantar = !juego.isManoTerminada();
+            // Habilitar según estado
+            btnTruco.setHabilitado(!manoTerminada);
+            btnRetruco.setHabilitado(!manoTerminada && juego.getGestorTruco().isCantoAceptado());
+            btnValeCuatro.setHabilitado(!manoTerminada && juego.getGestorTruco().isCantoAceptado());
 
-            btnTruco.setHabilitado(puedeCantar);
-            btnRetruco.setHabilitado(puedeCantar);
-            btnValeCuatro.setHabilitado(puedeCantar);
+            // BOTONES DE ENVIDO: solo en primera tirada
+            boolean puedeEnvido = !manoTerminada && tiradaActual == 1;
 
-            mensajeEstado = "Turno: Jugador " + turno + " | Ronda " + juego.getTiradaActual();
+            btnEnvido.setVisible(puedeEnvido);
+            btnRealEnvido.setVisible(puedeEnvido);
+            btnFaltaEnvido.setVisible(puedeEnvido);
+
+            btnEnvido.setHabilitado(puedeEnvido);
+            btnRealEnvido.setHabilitado(puedeEnvido);
+            btnFaltaEnvido.setHabilitado(puedeEnvido);
+
+            mensajeEstado = "Turno: J" + juego.getTurnoActual() + " | Ronda " + juego.getTiradaActual();
         }
     }
 
@@ -210,8 +281,8 @@ public class PantallaDosJugadores implements Screen {
     public void procesarClickBoton(Boton boton) {
         System.out.println("DEBUG: procesarClickBoton() - Botón: " + boton.getTexto());
 
+        // ===== PROCESAR RESPUESTAS (QUIERO / NO QUIERO) =====
         if (boton == btnQuiero || boton == btnNoQuiero) {
-            // Procesar respuesta a canto
             if (!juego.hayCantoPendiente()) {
                 System.out.println("DEBUG: No hay canto pendiente para responder");
                 return;
@@ -222,32 +293,40 @@ public class PantallaDosJugadores implements Screen {
 
             System.out.println("DEBUG: J" + jugadorResponde + " responde: " + (quiero ? "QUIERO" : "NO QUIERO"));
 
-            int resultado = juego.responderCanto(jugadorResponde, quiero);
-            System.out.println("DEBUG: Resultado respuesta: " + resultado);
+            int resultado = -1;
 
-            if (resultado > 0) {
-                // Alguien ganó la mano por el canto
-                mensajeEstado = "Jugador " + resultado + " ganó la mano! J1: " +
-                    juego.getPuntosJ1() + " - J2: " + juego.getPuntosJ2();
+            // Responder según el tipo de canto pendiente
+            if (tipoCantoPendiente != null && tipoCantoPendiente.equals("truco")) {
+                resultado = juego.responderCanto(jugadorResponde, quiero);
 
-                // Reiniciar mano
-                juego.reiniciarManoSiCorresponde();
-                jugador1 = juego.getJugador1();
-                jugador2 = juego.getJugador2();
-                jugadasJ1.clear();
-                jugadasJ2.clear();
-                posicionarCartasJugadorAbajo(jugador1.getMano());
-                posicionarCartasJugadorArriba(jugador2.getMano());
-            } else if (resultado == 0) {
-                // QUIERO - se continúa jugando
-                mensajeEstado = "QUIERO! Se juega al valor cantado";
+                if (resultado > 0) {
+                    // Alguien ganó la mano por rechazar el truco
+                    mensajeEstado = "J" + resultado + " ganó la mano! J1: " +
+                        juego.getPuntosJ1() + " - J2: " + juego.getPuntosJ2();
+
+                    reiniciarManoVisual();
+                } else if (resultado == 0) {
+                    mensajeEstado = "QUIERO! Se juega al valor cantado";
+                }
+
+            } else if (tipoCantoPendiente != null && tipoCantoPendiente.equals("envido")) {
+                resultado = juego.responderEnvido(jugadorResponde, quiero);
+
+                if (resultado > 0) {
+                    // Alguien ganó el envido
+                    mensajeEstado = "J" + resultado + " ganó el ENVIDO! J1: " +
+                        juego.getPuntosJ1() + " - J2: " + juego.getPuntosJ2();
+                } else if (resultado == 0) {
+                    mensajeEstado = "QUIERO ENVIDO! Mostrando cartas...";
+                    // Aquí podrías agregar lógica para mostrar las cartas y calcular envidos
+                }
             }
 
             actualizarEstadoBotones();
             return;
         }
 
-        // Procesar cantos (Truco, Retruco, Vale Cuatro)
+        // ===== PROCESAR CANTOS DE TRUCO =====
         int turno = juego.getTurnoActual();
         String tipoCanto = null;
 
@@ -263,18 +342,69 @@ public class PantallaDosJugadores implements Screen {
             System.out.println("DEBUG: J" + turno + " intenta cantar " + tipoCanto.toUpperCase());
 
             if (juego.cantar(turno, tipoCanto)) {
-                mensajeEstado = "Jugador " + turno + " cantó " + tipoCanto.toUpperCase() + "!";
+                mensajeEstado = "J" + turno + " cantó " + tipoCanto.toUpperCase() + "!";
                 System.out.println("DEBUG: Canto exitoso");
                 actualizarEstadoBotones();
             } else {
                 System.out.println("DEBUG: No se pudo cantar " + tipoCanto);
                 mensajeEstado = "No puedes cantar " + tipoCanto.toUpperCase() + " ahora";
             }
+            return;
+        }
+
+        // ===== PROCESAR CANTOS DE ENVIDO =====
+        // IMPORTANTE: Puede ser canto inicial O subida de apuesta
+        String tipoEnvido = null;
+
+        if (boton == btnEnvido) {
+            tipoEnvido = "envido";
+        } else if (boton == btnRealEnvido) {
+            tipoEnvido = "real envido";
+        } else if (boton == btnFaltaEnvido) {
+            tipoEnvido = "falta envido";
+        }
+
+        if (tipoEnvido != null) {
+            // Determinar quién canta: puede ser el turno actual O el que debe responder (si está subiendo)
+            int jugadorQueCanta;
+
+            if (juego.getGestorEnvido().estaEsperandoRespuesta()) {
+                // Hay canto pendiente - el jugador está subiendo la apuesta
+                jugadorQueCanta = juego.getJugadorQueDebeResponder();
+                System.out.println("DEBUG: J" + jugadorQueCanta + " está SUBIENDO con " + tipoEnvido.toUpperCase());
+            } else {
+                // No hay canto pendiente - canto inicial
+                jugadorQueCanta = turno;
+                System.out.println("DEBUG: J" + jugadorQueCanta + " intenta cantar " + tipoEnvido.toUpperCase());
+            }
+
+            if (juego.cantarEnvido(jugadorQueCanta, tipoEnvido)) {
+                mensajeEstado = "J" + jugadorQueCanta + " cantó " + tipoEnvido.toUpperCase() + "!";
+                System.out.println("DEBUG: Canto de envido exitoso");
+                actualizarEstadoBotones();
+            } else {
+                System.out.println("DEBUG: No se pudo cantar " + tipoEnvido);
+                mensajeEstado = "No puedes cantar " + tipoEnvido.toUpperCase() + " ahora";
+            }
         }
     }
 
+    private void reiniciarManoVisual() {
+        juego.reiniciarManoSiCorresponde();
+        jugador1 = juego.getJugador1();
+        jugador2 = juego.getJugador2();
+        jugadasJ1.clear();
+        jugadasJ2.clear();
+        posicionarCartasJugadorAbajo(jugador1.getMano());
+        posicionarCartasJugadorArriba(jugador2.getMano());
+    }
+
     public Boton[] getBotones() {
-        return new Boton[]{btnTruco, btnRetruco, btnValeCuatro, btnQuiero, btnNoQuiero};
+        return new Boton[]{
+            btnTruco, btnRetruco, btnValeCuatro,
+            btnEnvido, btnRealEnvido, btnFaltaEnvido,
+            btnQuiero, btnNoQuiero
+        };
     }
 
     private void configurarPosicionesMesa() {
@@ -348,6 +478,9 @@ public class PantallaDosJugadores implements Screen {
         if (btnTruco != null) btnTruco.dibujar(batch);
         if (btnRetruco != null) btnRetruco.dibujar(batch);
         if (btnValeCuatro != null) btnValeCuatro.dibujar(batch);
+        if (btnEnvido != null) btnEnvido.dibujar(batch);
+        if (btnRealEnvido != null) btnRealEnvido.dibujar(batch);
+        if (btnFaltaEnvido != null) btnFaltaEnvido.dibujar(batch);
         if (btnQuiero != null) btnQuiero.dibujar(batch);
         if (btnNoQuiero != null) btnNoQuiero.dibujar(batch);
         batch.end();
@@ -363,6 +496,9 @@ public class PantallaDosJugadores implements Screen {
         btnTruco.dispose();
         btnRetruco.dispose();
         btnValeCuatro.dispose();
+        btnEnvido.dispose();
+        btnRealEnvido.dispose();
+        btnFaltaEnvido.dispose();
         btnQuiero.dispose();
         btnNoQuiero.dispose();
         fuente.dispose();
