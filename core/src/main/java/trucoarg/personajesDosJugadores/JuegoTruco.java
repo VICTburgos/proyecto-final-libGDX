@@ -15,6 +15,11 @@ public class JuegoTruco {
     private final Truco gestorTruco = new Truco();
     private final Envido gestorEnvido = new Envido();
 
+    private boolean envidoYaResuelto = false;
+
+    // 🆕 PUNTOS PARA GANAR
+    private int puntosParaGanar = 15;
+
     private int manoOriginal;
     private int turnoActual = 1;
     private int tiradaActual = 1;
@@ -27,10 +32,17 @@ public class JuegoTruco {
     private int puntosJ1 = 0;
     private int puntosJ2 = 0;
 
-    public JuegoTruco() {
+    // 🆕 CONSTRUCTORES
+    public JuegoTruco(int puntosParaGanar) {
+        this.puntosParaGanar = puntosParaGanar;
         mazo = new MazoSolitario();
         colisiones = new ColisionesDosJugadores();
         iniciarNuevaMano();
+        System.out.println("🎮 Juego iniciado a " + puntosParaGanar + " puntos");
+    }
+
+    public JuegoTruco() {
+        this(15); // Por defecto 15 puntos
     }
 
     public void iniciarNuevaMano() {
@@ -57,6 +69,7 @@ public class JuegoTruco {
 
         gestorTruco.reset();
         gestorEnvido.reset();
+        envidoYaResuelto = false;
     }
 
     public boolean jugarCarta(int jugador, CartaSolitario carta) {
@@ -123,6 +136,12 @@ public class JuegoTruco {
             System.out.println("\n***** FIN DE MANO *****");
             System.out.println("Ganador de la mano: J" + ganadorMano);
             System.out.println("Puntos -> J1: " + puntosJ1 + " | J2: " + puntosJ2);
+
+            // 🆕 VERIFICAR VICTORIA
+            if (hayGanador()) {
+                System.out.println("🏆 ¡HAY UN GANADOR! J" + getGanadorFinal());
+            }
+
             return ganadorMano;
         }
 
@@ -166,9 +185,22 @@ public class JuegoTruco {
             return false;
         }
 
-        if (jugador != turnoActual) {
-            System.out.println("No es turno de J" + jugador);
+        if (envidoYaResuelto) {
+            System.out.println("El envido ya fue resuelto en esta mano");
             return false;
+        }
+
+        if (gestorEnvido.estaEsperandoRespuesta()) {
+            int jugadorQueDebeResponder = gestorEnvido.getJugadorQueDebeResponder();
+            if (jugador != jugadorQueDebeResponder) {
+                System.out.println("No puedes subir el envido, no es tu turno para responder");
+                return false;
+            }
+        } else {
+            if (jugador != turnoActual) {
+                System.out.println("No es turno de J" + jugador);
+                return false;
+            }
         }
 
         return gestorEnvido.cantar(jugador, tipoEnvido);
@@ -184,51 +216,77 @@ public class JuegoTruco {
                 puntosJ1 += gestorTruco.getPuntos();
             else
                 puntosJ2 += gestorTruco.getPuntos();
+
+            // 🆕 VERIFICAR VICTORIA
+            if (hayGanador()) {
+                System.out.println("🏆 ¡HAY UN GANADOR! J" + getGanadorFinal());
+            }
         }
 
         return resultado;
     }
 
-    /**
-     * Responde a un canto de envido
-     * El envido NO termina la mano, solo suma puntos
-     */
     public int responderEnvido(int jugador, boolean quiero) {
         int resultado = gestorEnvido.responder(jugador, quiero);
 
         if (resultado == 0) {
-            // Envido aceptado: quien lo cantó suma puntos
+            // Envido aceptado: se deben comparar los envidos
             int ganador = gestorEnvido.getJugadorQueCanto();
             int puntosEnvido = gestorEnvido.getPuntos();
 
             if (ganador == 1) {
                 puntosJ1 += puntosEnvido;
-                System.out.println("J1 suma " + puntosEnvido + " puntos por envido");
+                System.out.println("J1 suma " + puntosEnvido + " puntos por envido QUERIDO");
             } else {
                 puntosJ2 += puntosEnvido;
-                System.out.println("J2 suma " + puntosEnvido + " puntos por envido");
+                System.out.println("J2 suma " + puntosEnvido + " puntos por envido QUERIDO");
             }
 
-            // IMPORTANTE: Reset del envido después de procesarlo
             gestorEnvido.reset();
+            envidoYaResuelto = true;
+
+            // 🆕 VERIFICAR VICTORIA
+            if (hayGanador()) {
+                System.out.println("🏆 ¡HAY UN GANADOR! J" + getGanadorFinal());
+            }
 
         } else if (resultado > 0) {
-            // Envido rechazado: quien lo cantó gana los puntos
-            int puntosEnvido = gestorEnvido.getPuntos();
+            // Envido rechazado (NO QUIERO)
+            int puntosRechazo = gestorEnvido.getPuntosRechazo();
 
             if (resultado == 1) {
-                puntosJ1 += puntosEnvido;
-                System.out.println("J1 suma " + puntosEnvido + " puntos (envido rechazado)");
+                puntosJ1 += puntosRechazo;
+                System.out.println("J1 suma " + puntosRechazo + " punto (envido NO QUERIDO)");
             } else {
-                puntosJ2 += puntosEnvido;
-                System.out.println("J2 suma " + puntosEnvido + " puntos (envido rechazado)");
+                puntosJ2 += puntosRechazo;
+                System.out.println("J2 suma " + puntosRechazo + " punto (envido NO QUERIDO)");
             }
 
-            // Reset del envido después de procesarlo
             gestorEnvido.reset();
+            envidoYaResuelto = true;
+
+            // 🆕 VERIFICAR VICTORIA
+            if (hayGanador()) {
+                System.out.println("🏆 ¡HAY UN GANADOR! J" + getGanadorFinal());
+            }
         }
 
         return resultado;
+    }
+
+    // 🆕 MÉTODOS DE VICTORIA
+    public boolean hayGanador() {
+        return puntosJ1 >= puntosParaGanar || puntosJ2 >= puntosParaGanar;
+    }
+
+    public int getGanadorFinal() {
+        if (puntosJ1 >= puntosParaGanar) return 1;
+        if (puntosJ2 >= puntosParaGanar) return 2;
+        return -1;
+    }
+
+    public int getPuntosParaGanar() {
+        return puntosParaGanar;
     }
 
     public boolean hayCantoPendiente() {
@@ -290,5 +348,9 @@ public class JuegoTruco {
 
     public Envido getGestorEnvido() {
         return gestorEnvido;
+    }
+
+    public boolean isEnvidoYaResuelto() {
+        return envidoYaResuelto;
     }
 }

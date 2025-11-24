@@ -3,6 +3,7 @@ package trucoarg.principal;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import trucoarg.pantallas.PantallaMenu;
+import trucoarg.pantallas.PantallaSeleccionPuntos;
 import trucoarg.utiles.Recursos;
 import trucoarg.utiles.Render;
 
@@ -17,6 +18,7 @@ public class Principal extends Game {
         Recursos.cargarCanciones();
         ponerMusica();
         this.setScreen(new PantallaMenu());
+        setScreen(new PantallaSeleccionPuntos(this));
     }
 
     @Override

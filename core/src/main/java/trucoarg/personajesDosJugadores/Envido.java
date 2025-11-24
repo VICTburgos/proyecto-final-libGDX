@@ -5,20 +5,29 @@ import java.util.List;
 
 /**
  * Maneja los cantos de Envido: Envido, Real Envido y Falta Envido
- * CORREGIDO: Permite subir la apuesta cuando hay canto pendiente
+ * CORREGIDO: Sistema de puntos acumulativos y subida de apuestas
  */
 public class Envido extends Canto {
 
     private static final int PUNTOS_ENVIDO = 2;
     private static final int PUNTOS_REAL_ENVIDO = 3;
-    private static final int PUNTOS_ENVIDO_ENVIDO = 4;
+    private static final int PUNTOS_FALTA_ENVIDO_BASE = 15; // Por ahora fijo, luego calcular
 
-    private int cantosEnvidoAcumulados = 0;
+    // Control de secuencia de cantos
+    private int puntosAcumulados = 0; // Puntos totales en juego
+    private boolean huboEnvido = false;
+    private boolean huboRealEnvido = false;
+    private boolean huboFaltaEnvido = false;
+    private int contadorEnvidos = 0; // Cuántos "envido" se cantaron
 
     @Override
     public void reset() {
         super.reset();
-        cantosEnvidoAcumulados = 0;
+        puntosAcumulados = 0;
+        huboEnvido = false;
+        huboRealEnvido = false;
+        huboFaltaEnvido = false;
+        contadorEnvidos = 0;
     }
 
     @Override
@@ -27,6 +36,7 @@ public class Envido extends Canto {
 
         System.out.println("DEBUG Envido.cantar() - J" + jugador + " intenta cantar: " + cantoLower);
         System.out.println("  Estado actual: cantoActual=" + cantoActual + ", esperandoRespuesta=" + esperandoRespuesta);
+        System.out.println("  Puntos acumulados: " + puntosAcumulados);
 
         // CLAVE: Si hay canto pendiente, solo el jugador que debe responder puede "subir"
         if (esperandoRespuesta) {
@@ -37,26 +47,43 @@ public class Envido extends Canto {
                 return false;
             }
 
-            // El jugador que debe responder está "subiendo" la apuesta
-            System.out.println("  J" + jugador + " está subiendo la apuesta de " + cantoActual + " a " + cantoLower);
+            System.out.println("  J" + jugador + " está SUBIENDO la apuesta de " + cantoActual + " a " + cantoLower);
         }
 
         if (!validarCanto(cantoLower, jugador)) {
             return false;
         }
 
-        // Registrar el canto ANTES de incrementar
-        if (cantoLower.equals("envido")) {
-            cantosEnvidoAcumulados++;
-        }
+        // ACUMULAR PUNTOS según el nuevo canto
+        acumularPuntos(cantoLower);
 
+        // Actualizar estado
         cantoActual = cantoLower;
         jugadorQueCanto = jugador;
         esperandoRespuesta = true;
         cantoAceptado = false;
 
-        System.out.println("  ÉXITO: Canto registrado. Esperando respuesta del J" + getJugadorQueDebeResponder());
+        System.out.println("  ÉXITO: Canto registrado. Puntos en juego: " + puntosAcumulados);
+        System.out.println("  Esperando respuesta del J" + getJugadorQueDebeResponder());
         return true;
+    }
+
+    private void acumularPuntos(String tipoCanto) {
+        switch (tipoCanto) {
+            case "envido":
+                puntosAcumulados += PUNTOS_ENVIDO;
+                huboEnvido = true;
+                contadorEnvidos++;
+                break;
+            case "real envido":
+                puntosAcumulados += PUNTOS_REAL_ENVIDO;
+                huboRealEnvido = true;
+                break;
+            case "falta envido":
+                // Falta envido se calcula después
+                huboFaltaEnvido = true;
+                break;
+        }
     }
 
     @Override
@@ -65,7 +92,7 @@ public class Envido extends Canto {
             case "envido":
                 // Si no hay canto activo, se puede cantar libremente
                 if (cantoActual == null) {
-                    if (cantosEnvidoAcumulados >= 2) {
+                    if (contadorEnvidos >= 2) {
                         System.out.println("  RECHAZADO: Ya se cantó envido 2 veces");
                         return false;
                     }
@@ -79,7 +106,7 @@ public class Envido extends Canto {
                 }
 
                 // Máximo 2 envidos acumulados
-                if (cantosEnvidoAcumulados >= 2) {
+                if (contadorEnvidos >= 2) {
                     System.out.println("  RECHAZADO: Ya se cantó envido 2 veces");
                     return false;
                 }
@@ -124,7 +151,7 @@ public class Envido extends Canto {
     @Override
     public int responder(int jugador, boolean quiero) {
         System.out.println("DEBUG Envido.responder() - J" + jugador + " responde: " + (quiero ? "QUIERO" : "NO QUIERO"));
-        System.out.println("  Estado: cantoActual=" + cantoActual + ", cantosEnvidoAcumulados=" + cantosEnvidoAcumulados);
+        System.out.println("  Estado: cantoActual=" + cantoActual + ", puntosAcumulados=" + puntosAcumulados);
 
         if (!esperandoRespuesta) {
             System.out.println("  ERROR: No hay canto pendiente");
@@ -142,30 +169,30 @@ public class Envido extends Canto {
             cantoAceptado = true;
             int pts = getPuntos();
             System.out.println("  Canto aceptado. Se juega por " + pts + " puntos");
-            return 0;
+            return 0; // Continúa el juego, se deben mostrar cartas
         } else {
-            System.out.println("  Canto rechazado. Gana J" + jugadorQueCanto);
+            // NO QUIERO: gana quien cantó, pero solo gana 1 punto
+            System.out.println("  Canto rechazado. J" + jugadorQueCanto + " gana 1 punto");
             return jugadorQueCanto;
         }
     }
 
     @Override
     public int getPuntos() {
-        if (cantoActual == null) {
-            return 1; // Valor por defecto si se rechaza antes de cantar
+        if (huboFaltaEnvido) {
+            // TODO: Implementar cálculo según puntos de cada jugador
+            // Por ahora retorna los puntos acumulados hasta ahora + falta envido
+            return puntosAcumulados + PUNTOS_FALTA_ENVIDO_BASE;
         }
 
-        switch (cantoActual) {
-            case "envido":
-                return PUNTOS_ENVIDO * cantosEnvidoAcumulados;
-            case "real envido":
-                return PUNTOS_REAL_ENVIDO + (PUNTOS_ENVIDO * cantosEnvidoAcumulados);
-            case "falta envido":
-                // TODO: Implementar cálculo según puntos de cada jugador
-                return 15;
-            default:
-                return 1;
-        }
+        return puntosAcumulados;
+    }
+
+    /**
+     * Retorna cuántos puntos gana quien rechaza (siempre 1)
+     */
+    public int getPuntosRechazo() {
+        return 1;
     }
 
     /**
@@ -177,23 +204,23 @@ public class Envido extends Canto {
         if (cantoActual == null) return false;
 
         // Se puede subir con envido solo si el canto actual es envido y no se llegó al máximo
-        return cantoActual.equals("envido") && cantosEnvidoAcumulados < 2;
+        return cantoActual.equals("envido") && contadorEnvidos < 2;
     }
 
     public boolean puedeSubirConRealEnvido() {
         if (!esperandoRespuesta) return false;
         if (cantoActual == null) return false;
 
-        // Se puede subir con real envido desde envido
-        return cantoActual.equals("envido");
+        // Se puede subir con real envido desde envido (y no se cantó real antes)
+        return cantoActual.equals("envido") && !huboRealEnvido;
     }
 
     public boolean puedeSubirConFaltaEnvido() {
         if (!esperandoRespuesta) return false;
         if (cantoActual == null) return false;
 
-        // Se puede subir con falta envido desde envido o real envido
-        return cantoActual.equals("envido") || cantoActual.equals("real envido");
+        // Se puede subir con falta envido desde envido o real envido (y no se cantó falta antes)
+        return (cantoActual.equals("envido") || cantoActual.equals("real envido")) && !huboFaltaEnvido;
     }
 
     public int calcularEnvido(List<CartaSolitario> mano) {
