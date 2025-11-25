@@ -73,26 +73,45 @@ public class JuegoTruco {
     }
 
     public boolean jugarCarta(int jugador, CartaSolitario carta) {
-        if (manoTerminada) return false;
-        if (jugador != turnoActual) return false;
-        if (carta.getYaJugadas()) return false;
+        System.out.println("\n=== jugarCarta() llamado ===");
+        System.out.println("Jugador que intenta jugar: J" + jugador);
+        System.out.println("Turno actual: J" + turnoActual);
+        System.out.println("Mano terminada: " + manoTerminada);
+        System.out.println("Carta ya jugada: " + carta.getYaJugadas());
+        System.out.println("Hay canto pendiente: " + hayCantoPendiente());
+
+        if (manoTerminada) {
+            System.out.println("❌ RECHAZADO: Mano terminada");
+            return false;
+        }
+
+        if (jugador != turnoActual) {
+            System.out.println("❌ RECHAZADO: No es turno de J" + jugador + " (turno actual: J" + turnoActual + ")");
+            return false;
+        }
+
+        if (carta.getYaJugadas()) {
+            System.out.println("❌ RECHAZADO: Carta ya fue jugada");
+            return false;
+        }
 
         carta.setYaJugadas(true);
 
         if (jugador == 1 && cartaJugadaJ1 == null) {
             cartaJugadaJ1 = carta;
             turnoActual = 2;
-            System.out.println("J1 jugó (nivel=" + carta.getNIVEL() + ")");
+            System.out.println("✅ J1 jugó carta (nivel=" + carta.getNIVEL() + "). Nuevo turno: J2");
             return true;
         }
 
         if (jugador == 2 && cartaJugadaJ2 == null) {
             cartaJugadaJ2 = carta;
             turnoActual = 1;
-            System.out.println("J2 jugó (nivel=" + carta.getNIVEL() + ")");
+            System.out.println("✅ J2 jugó carta (nivel=" + carta.getNIVEL() + "). Nuevo turno: J1");
             return true;
         }
 
+        System.out.println("❌ RECHAZADO: Condición desconocida");
         return false;
     }
 

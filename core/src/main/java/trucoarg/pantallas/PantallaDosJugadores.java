@@ -301,6 +301,8 @@ public class PantallaDosJugadores implements Screen {
 
                 posicionarCartasJugadorAbajo(jugador1.getMano());
                 posicionarCartasJugadorArriba(jugador2.getMano());
+
+                actualizarInputProcessor();
             }
         }
 
@@ -310,15 +312,12 @@ public class PantallaDosJugadores implements Screen {
     public void procesarClickBoton(Boton boton) {
         if (juegoTerminado) return;
 
-        // 🆕 PROCESAR BOTÓN IR AL MAZO
         if (boton == btnIrAlMazo) {
             int turnoActual = juego.getTurnoActual();
             mostrarMensajeTemporal("¡Jugador " + turnoActual + " se va al mazo!");
 
-            // Marcar la mano como terminada
             juego.terminarManoAlMazo();
 
-            // El otro jugador gana la mano
             int ganador = (turnoActual == 1) ? 2 : 1;
             int puntosTruco = juego.getGestorTruco().getPuntos();
 
@@ -331,7 +330,6 @@ public class PantallaDosJugadores implements Screen {
             verificarVictoria();
             if (juegoTerminado) return;
 
-            // Reiniciar la mano completamente
             juego.reiniciarManoSiCorresponde();
             jugador1 = juego.getJugador1();
             jugador2 = juego.getJugador2();
@@ -342,10 +340,13 @@ public class PantallaDosJugadores implements Screen {
             posicionarCartasJugadorAbajo(jugador1.getMano());
             posicionarCartasJugadorArriba(jugador2.getMano());
 
+            actualizarInputProcessor();
+
             actualizarEstadoBotones();
             return;
         }
 
+        // PROCESAR RESPUESTA A CANTOS (QUIERO / NO QUIERO)
         if (boton == btnQuiero || boton == btnNoQuiero) {
             if (!juego.hayCantoPendiente()) {
                 return;
@@ -360,11 +361,15 @@ public class PantallaDosJugadores implements Screen {
                 resultado = juego.responderCanto(jugadorResponde, quiero);
 
                 if (resultado > 0) {
+                    // NO QUIERO - Alguien ganó la mano
                     verificarVictoria();
                     if (juegoTerminado) return;
                     reiniciarManoVisual();
                 } else if (resultado == 0) {
+                    // QUIERO - Se acepta el truco y continúa el juego
                     mostrarMensajeTemporal("¡QUIERO!");
+                    // 🆕 CRÍTICO: Actualizar botones para que aparezca RETRUCO
+                    actualizarEstadoBotones();
                 }
 
             } else if (tipoCantoPendiente != null && tipoCantoPendiente.equals("envido")) {
@@ -373,16 +378,19 @@ public class PantallaDosJugadores implements Screen {
                 verificarVictoria();
                 if (juegoTerminado) return;
 
-                if (resultado > 0) {
-                } else if (resultado == 0) {
+                if (resultado == 0) {
                     mostrarMensajeTemporal("¡QUIERO ENVIDO!");
                 }
+                // 🆕 CRÍTICO: Actualizar botones después de resolver envido
+                actualizarEstadoBotones();
             }
 
+            // 🆕 SIEMPRE actualizar botones después de procesar respuesta
             actualizarEstadoBotones();
             return;
         }
 
+        // PROCESAR CANTOS DE TRUCO
         int turno = juego.getTurnoActual();
         String tipoCanto = null;
 
@@ -399,11 +407,12 @@ public class PantallaDosJugadores implements Screen {
                 mostrarMensajeTemporal("¡" + tipoCanto.toUpperCase() + "!");
                 actualizarEstadoBotones();
             } else {
-                mensajeTemporal = "No puedes cantar " + tipoCanto.toUpperCase() + " ahora";
+                mostrarMensajeTemporal("No puedes cantar " + tipoCanto.toUpperCase() + " ahora");
             }
             return;
         }
 
+        // PROCESAR CANTOS DE ENVIDO
         String tipoEnvido = null;
 
         if (boton == btnEnvido) {
@@ -426,6 +435,8 @@ public class PantallaDosJugadores implements Screen {
             if (juego.cantarEnvido(jugadorQueCanta, tipoEnvido)) {
                 mostrarMensajeTemporal("¡" + tipoEnvido.toUpperCase() + "!");
                 actualizarEstadoBotones();
+            } else {
+                mostrarMensajeTemporal("No puedes cantar " + tipoEnvido.toUpperCase() + " ahora");
             }
             return;
         }
@@ -439,6 +450,8 @@ public class PantallaDosJugadores implements Screen {
         jugadasJ2.clear();
         posicionarCartasJugadorAbajo(jugador1.getMano());
         posicionarCartasJugadorArriba(jugador2.getMano());
+
+        actualizarInputProcessor();
     }
 
     public Boton[] getBotones() {
@@ -578,6 +591,15 @@ public class PantallaDosJugadores implements Screen {
 
         dispose();
         Render.app.setScreen(new PantallaMenu());
+    }
+
+    private void actualizarInputProcessor() {
+        System.out.println("Actualizando InputProcessor con nuevas cartas");
+        Gdx.input.setInputProcessor(new EntradaDosJugadores(
+            jugador1.getMano(),
+            jugador2.getMano(),
+            this
+        ));
     }
 
     @Override public void resize(int width, int height) {}

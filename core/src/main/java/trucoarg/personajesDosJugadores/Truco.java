@@ -1,8 +1,5 @@
 package trucoarg.personajesDosJugadores;
 
-/**
- * Maneja los cantos de Truco: Truco, Retruco y Vale Cuatro
- */
 public class Truco extends Canto {
 
     private static final int PUNTOS_TRUCO = 2;
@@ -15,7 +12,9 @@ public class Truco extends Canto {
         String cantoLower = tipoCanto.toLowerCase().trim();
 
         System.out.println("DEBUG Truco.cantar() - J" + jugador + " intenta cantar: " + cantoLower);
-        System.out.println("  Estado actual: cantoActual=" + cantoActual + ", esperandoRespuesta=" + esperandoRespuesta);
+        System.out.println("  Estado actual: cantoActual=" + cantoActual +
+            ", esperandoRespuesta=" + esperandoRespuesta +
+            ", cantoAceptado=" + cantoAceptado);
 
         // No se puede cantar si hay un canto pendiente de respuesta
         if (esperandoRespuesta) {
@@ -32,7 +31,7 @@ public class Truco extends Canto {
         cantoActual = cantoLower;
         jugadorQueCanto = jugador;
         esperandoRespuesta = true;
-        cantoAceptado = false;
+        cantoAceptado = false; // Se resetea porque es un NUEVO canto
 
         System.out.println("  ÉXITO: Canto registrado. Esperando respuesta del J" + getJugadorQueDebeResponder());
         return true;
@@ -42,9 +41,9 @@ public class Truco extends Canto {
     protected boolean validarCanto(String tipoCanto, int jugador) {
         switch (tipoCanto) {
             case "truco":
-                // Truco solo si no hay ningún canto previo
+                // Truco solo si no hay ningún canto previo o si está sin resolver
                 if (cantoActual != null) {
-                    System.out.println("  RECHAZADO: Ya hay canto activo");
+                    System.out.println("  RECHAZADO: Ya hay canto activo (" + cantoActual + ")");
                     return false;
                 }
                 return true;
@@ -82,7 +81,7 @@ public class Truco extends Canto {
 
     @Override
     public int getPuntos() {
-        if (cantoActual == null || !cantoAceptado) {
+        if (cantoActual == null) {
             return PUNTOS_SIN_CANTO;
         }
 
