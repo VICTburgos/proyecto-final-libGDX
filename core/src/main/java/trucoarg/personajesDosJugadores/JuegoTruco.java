@@ -265,7 +265,6 @@ public class JuegoTruco {
             gestorEnvido.reset();
             envidoYaResuelto = true;
 
-            // 🆕 VERIFICAR VICTORIA
             if (hayGanador()) {
                 System.out.println("🏆 ¡HAY UN GANADOR! J" + getGanadorFinal());
             }
@@ -274,9 +273,21 @@ public class JuegoTruco {
         return resultado;
     }
 
-    // 🆕 MÉTODOS DE VICTORIA
     public boolean hayGanador() {
         return puntosJ1 >= puntosParaGanar || puntosJ2 >= puntosParaGanar;
+    }
+
+    public void terminarManoAlMazo() {
+        manoTerminada = true;
+    }
+
+    // 🆕 MÉTODOS PARA AGREGAR PUNTOS DIRECTAMENTE
+    public void agregarPuntosJ1(int puntos) {
+        puntosJ1 += puntos;
+    }
+
+    public void agregarPuntosJ2(int puntos) {
+        puntosJ2 += puntos;
     }
 
     public int getGanadorFinal() {

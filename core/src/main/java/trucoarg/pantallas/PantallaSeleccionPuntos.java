@@ -1,6 +1,7 @@
 package trucoarg.pantallas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,6 +19,7 @@ public class PantallaSeleccionPuntos implements Screen {
     private SpriteBatch batch;
     private BitmapFont tituloFuente;
     private BitmapFont subtituloFuente;
+    private BitmapFont infoFuente; // 🆕 Fuente para el mensaje de ESC
 
     private Boton btn15Puntos;
     private Boton btn30Puntos;
@@ -54,6 +56,16 @@ public class PantallaSeleccionPuntos implements Screen {
 
                 return false;
             }
+
+            // 🆕 Detectar tecla ESC
+            @Override
+            public boolean keyDown(int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    volverAlMenu();
+                    return true;
+                }
+                return false;
+            }
         });
     }
 
@@ -77,23 +89,31 @@ public class PantallaSeleccionPuntos implements Screen {
             paramSubtitulo.color = new Color(0.9f, 0.9f, 0.9f, 1f);
             subtituloFuente = generator.generateFont(paramSubtitulo);
 
+            // 🆕 Fuente para el mensaje de ESC
+            FreeTypeFontGenerator.FreeTypeFontParameter paramInfo =
+                new FreeTypeFontGenerator.FreeTypeFontParameter();
+            paramInfo.size = 24;
+            paramInfo.color = Color.WHITE;
+            infoFuente = generator.generateFont(paramInfo);
+
             generator.dispose();
         } catch (Exception e) {
-            System.out.println("Error cargando fuentes: ");
+            System.out.println("Error cargando fuentes: " + e.getMessage());
             tituloFuente = new BitmapFont();
             tituloFuente.getData().setScale(4f);
             subtituloFuente = new BitmapFont();
             subtituloFuente.getData().setScale(2f);
+            infoFuente = new BitmapFont();
+            infoFuente.getData().setScale(1.5f);
         }
     }
 
     private void crearBotones() {
         float btnAncho = 300;
         float btnAlto = 100;
-        float separacion = 30; // Espacio entre botones
-        float centroY = Configuracion.ALTO / 2f - 50; // Más abajo del título
+        float separacion = 30;
+        float centroY = Configuracion.ALTO / 2f - 50;
 
-        // Calcular posiciones para centrar ambos botones
         float totalAncho = (btnAncho * 2) + separacion;
         float inicioX = (Configuracion.ANCHO / 2f) - (totalAncho / 2f);
 
@@ -102,7 +122,6 @@ public class PantallaSeleccionPuntos implements Screen {
         Color blanco = Color.WHITE;
         Color borde = new Color(0.2f, 0.4f, 0.6f, 1f);
 
-        // Botón izquierdo (15 puntos)
         btn15Puntos = new Boton("15 PUNTOS",
             inicioX,
             centroY,
@@ -110,7 +129,6 @@ public class PantallaSeleccionPuntos implements Screen {
             btnAlto);
         btn15Puntos.setColor(azulArg, blanco, borde);
 
-        // Botón derecho (30 puntos)
         btn30Puntos = new Boton("30 PUNTOS",
             inicioX + btnAncho + separacion,
             centroY,
@@ -121,13 +139,15 @@ public class PantallaSeleccionPuntos implements Screen {
 
     private void iniciarJuego(int puntosParaGanar) {
         System.out.println("Iniciando juego a " + puntosParaGanar + " puntos");
+        dispose(); // 🆕 Limpiar recursos antes de cambiar
+        Render.app.setScreen(new PantallaDosJugadores(puntosParaGanar));
+    }
 
-        if (gameInstance instanceof com.badlogic.gdx.Game) {
-            PantallaDosJugadores pantallaJuego = new PantallaDosJugadores(puntosParaGanar, gameInstance);
-            ((com.badlogic.gdx.Game) gameInstance).setScreen(pantallaJuego);
-        } else {
-            System.out.println("ERROR: No se pudo iniciar el juego (gameInstance no válido)");
-        }
+    // 🆕 Método para volver al menú
+    private void volverAlMenu() {
+        System.out.println("Volviendo al menú principal...");
+        dispose(); // Limpiar recursos antes de cambiar
+        Render.app.setScreen(new PantallaMenu());
     }
 
     @Override
@@ -147,6 +167,10 @@ public class PantallaSeleccionPuntos implements Screen {
         float subtituloX = Configuracion.ANCHO / 2f - 200;
         float subtituloY = Configuracion.ALTO - 250;
         subtituloFuente.draw(batch, subtitulo, subtituloX, subtituloY);
+
+        // 🆕 Mostrar mensaje de ESC
+        String mensajeEsc = "ESC para volver al menú principal...";
+        infoFuente.draw(batch, mensajeEsc, 50, 650);
 
         btn15Puntos.dibujar(batch);
         btn30Puntos.dibujar(batch);
@@ -171,6 +195,7 @@ public class PantallaSeleccionPuntos implements Screen {
         if (fondo != null) fondo.dispose();
         if (tituloFuente != null) tituloFuente.dispose();
         if (subtituloFuente != null) subtituloFuente.dispose();
+        if (infoFuente != null) infoFuente.dispose(); // 🆕
         if (btn15Puntos != null) btn15Puntos.dispose();
         if (btn30Puntos != null) btn30Puntos.dispose();
     }

@@ -103,10 +103,10 @@ public class PantallaMenu implements Screen {
             Render.app.setScreen(new PantallaUnJugador());
                 break;
             case 2:
-                Render.app.setScreen(new PantallaDosJugadores());
+                Render.app.setScreen(new PantallaSeleccionPuntos(this));
                 break;
             case 3:
-                //opciones
+                Render.app.setScreen(new PantallaConfiguraciones());
                 break;
             case 4:
                 Render.app.setScreen(new PantallaTutorial());

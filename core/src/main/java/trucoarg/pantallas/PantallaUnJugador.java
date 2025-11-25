@@ -3,6 +3,7 @@ package trucoarg.pantallas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import trucoarg.elementos.Imagen;
@@ -24,6 +25,13 @@ public class PantallaUnJugador implements Screen {
 
     Texto informacionSalida;
     Texto ganador;
+
+    // 🆕 TIMER
+    private BitmapFont fuenteTimer;
+    private float tiempoRestante = 60f; // 60 segundos
+    private static final float TIEMPO_INICIAL = 60f;
+    private boolean tiempoAgotado = false;
+    private float tiempoMostrandoAgotado = 0f;
 
     private MazoSolitario mazoSolitario;
     private CartaSolitario cartaActual;
@@ -49,11 +57,17 @@ public class PantallaUnJugador implements Screen {
         informacionSalida = new Texto(Recursos.FUENTE_MENU, 40, Color.WHITE, true);
         ganador = new Texto(Recursos.FUENTE_MENU, 60, Color.BLUE, true);
 
+        // 🆕 INICIALIZAR FUENTE TIMER
+        fuenteTimer = new BitmapFont();
+        fuenteTimer.getData().setScale(3f);
+        fuenteTimer.setColor(Color.RED);
+        tiempoRestante = TIEMPO_INICIAL;
+        tiempoAgotado = false;
+        tiempoMostrandoAgotado = 0f;
+
         mazoSolitario = new MazoSolitario();
         cartaActual = mazoSolitario.sacarCartita();
         colisionesSolitario= new ColisionesSolitario();
-
-
 
         POSICION_INICIAL.set(centroX, centroY);
 
@@ -81,9 +95,52 @@ public class PantallaUnJugador implements Screen {
             cartaActual.setSize(200, 300);
             cartaActual.dibujar(b);
             colisionesSolitario.dibujarZonas();
-
         }
 
+        // 🆕 ACTUALIZAR Y DIBUJAR TIMER
+        if (!tiempoAgotado) {
+            tiempoRestante -= delta;
+            if (tiempoRestante <= 0) {
+                tiempoRestante = 0;
+                tiempoAgotado = true;
+                tiempoMostrandoAgotado = 0f;
+            }
+        } else {
+            tiempoMostrandoAgotado += delta;
+        }
+
+        // 🆕 DIBUJAR TIMER EN PANTALLA
+        int minutos = (int) tiempoRestante / 60;
+        int segundos = (int) tiempoRestante % 60;
+        String textoTimer = String.format("%d:%02d", minutos, segundos);
+
+        // Cambiar color según tiempo restante
+        if (tiempoRestante > 20) {
+            fuenteTimer.setColor(Color.WHITE);
+        } else if (tiempoRestante > 10) {
+            fuenteTimer.setColor(Color.YELLOW);
+        } else {
+            fuenteTimer.setColor(Color.RED);
+        }
+
+        fuenteTimer.draw(b, textoTimer, Configuracion.ANCHO - 200, Configuracion.ALTO - 50);
+
+        // 🆕 SI TIEMPO SE ACABÓ, REINICIAR
+        if (tiempoAgotado && contAciertos < 40) {
+            fuenteTimer.setColor(Color.RED);
+            fuenteTimer.getData().setScale(4f);
+            com.badlogic.gdx.graphics.g2d.GlyphLayout layout =
+                new com.badlogic.gdx.graphics.g2d.GlyphLayout(fuenteTimer, "¡TIEMPO AGOTADO!");
+            fuenteTimer.draw(b, "¡TIEMPO AGOTADO!",
+                Configuracion.ANCHO / 2f - layout.width / 2f,
+                Configuracion.ALTO / 2f + 100);
+            fuenteTimer.getData().setScale(3f);
+
+            // Reiniciar después de 2 segundos
+            if (tiempoMostrandoAgotado >= 2f) {
+                reiniciarJuego();
+            }
+        }
 
         if (contAciertos == 40) {
             ganar();
@@ -102,6 +159,14 @@ public class PantallaUnJugador implements Screen {
             Recursos.MUSICA_GENERAL.play();
             Render.app.setScreen(new PantallaMenu());
             return true;
+        }
+
+        // 🆕 SI TIEMPO AGOTADO, REINICIAR AUTOMÁTICAMENTE DESPUÉS DE 2 SEGUNDOS
+        if (tiempoAgotado && contAciertos < 40) {
+            if (tiempoMostrandoAgotado >= 2f) {
+                reiniciarJuego();
+            }
+            return false;
         }
 
         if (entradasJuegoSoli.basto()) {
@@ -150,7 +215,7 @@ public class PantallaUnJugador implements Screen {
         if (entradasJuegoSoli.enter()) {
             boolean acierto = colisionesSolitario.colision(cartaActual, mazoSolitario);
             if (acierto) {
-                  sacarNuevaCarta();
+                sacarNuevaCarta();
             }
             else{
                 reiniciarJuego();
@@ -160,10 +225,10 @@ public class PantallaUnJugador implements Screen {
         return false;
     }
 
-        private void sacarNuevaCarta() {
+    private void sacarNuevaCarta() {
         contAciertos++;
         estadisticas.setAciertos(contAciertos);
-            System.out.println("tus aciertos son: "+ estadisticas.getAciertos());
+        System.out.println("tus aciertos son: "+ estadisticas.getAciertos());
         cartaActual = mazoSolitario.sacarCartita();
         if (cartaActual != null) {
             cartaActual.setPosicion(POSICION_INICIAL);
@@ -182,13 +247,19 @@ public class PantallaUnJugador implements Screen {
         estadisticas.setRepeticiones(contRepeticiones);
         estadisticas.setAciertos(contAciertos);
         System.out.println("Tus repes son"+ estadisticas.getRepeticiones());
+
+        // 🆕 REINICIAR TIMER
+        tiempoRestante = TIEMPO_INICIAL;
+        tiempoAgotado = false;
+        tiempoMostrandoAgotado = 0f;
+
         mazoSolitario.reiniciarMazo();
         cartaActual = mazoSolitario.sacarCartita();
 
-            if (cartaActual != null) {
-                cartaActual.setPosicion(POSICION_INICIAL);
-            }
-     }
+        if (cartaActual != null) {
+            cartaActual.setPosicion(POSICION_INICIAL);
+        }
+    }
 
     @Override
     public void resize(int width, int height) {
@@ -211,5 +282,6 @@ public class PantallaUnJugador implements Screen {
         Recursos.liberar();
         fondo.dispose();
         b.dispose();
+        if (fuenteTimer != null) fuenteTimer.dispose(); // 🆕
     }
 }
